@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Soldiro AI — Client Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;800;900&family=Sora:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ══════════════════════════════════════
+       TOKENS — Soldiro brand
+    ══════════════════════════════════════ */
+    :root {
+      --bg:        #07070a;
+      --surface:   #0d0d16;
+      --surface2:  #111119;
+      --surface3:  #1a1a26;
+      --border:    #1e1e2e;
+      --border2:   #2a2a3a;
+      --border3:   #35354a;
+      --gold:      #e8b84b;
+      --gold2:     #c49030;
+      --gold3:     #f5d07a;
+      --goldfade:  rgba(232,184,75,0.07);
+      --goldring:  rgba(232,184,75,0.18);
+      --red:       #e84b6a;
+      --green:     #2ecc8a;
+      --blue:      #4a8fff;
+      --amber:     #ffb347;
+      --text:      #eae6f5;
+      --text2:     #a9a1c2;
+      --text3:     #6a6380;
+      --muted:     #43405c;
+      --font-d:    'Barlow Condensed', sans-serif;
+      --font-b:    'Sora', sans-serif;
+      --font-m:    'JetBrains Mono', monospace;
+      --sidebar-w: 260px;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { height: 100%; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-b);
+      font-size: 14px;
+      line-height: 1.5;
+      height: 100%;
+      overflow: hidden; /* prevent double scroll */
+    }
+
+    /* ══ LAYOUT SHELL ══ */
+    .dashboard {
+      display: grid;
+      grid-template-columns: var(--sidebar-w) 1fr;
+      height: 100vh;
+    }
+
+    /* ══ SIDEBAR ══ */
+    .sidebar {
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow-y: auto;
+      position: sticky;
+      top: 0;
+    }
+
+    .logo-area {
+      padding: 24px 20px 20px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .logo-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-m);
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 12px;
+    }
+
+    .logo-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--gold);
+      flex-shrink: 0;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(232,184,75,0.4); }
+      50%       { opacity: 0.7; box-shadow: 0 0 0 6px rgba(232,184,75,0); }
+    }
+
+    .logo-name {
+      font-family: var(--font-d);
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1;
+      letter-spacing: 0.5px;
+    }
+
+    .logo-name span { color: var(--gold); }
+
+    .logo-sub {
+      font-family: var(--font-b);
+      font-size: 11px;
+      color: var(--text2);
+      margin-top: 4px;
+    }
+
+    /* Nav */
+    .nav-section { padding: 16px 0 8px; }
+
+    .nav-label {
+      font-family: var(--font-m);
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text3);
+      padding: 0 20px 8px;
+    }
+
+    /* Fix: nav items are semantic buttons, not divs */
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 9px 20px;
+      margin: 1px 0;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      border: none;
+      border-left: 3px solid transparent;
+      background: transparent;
+      font-family: var(--font-b);
+      font-size: 13px;
+      color: var(--text2);
+      text-align: left;
+      border-radius: 0;
+    }
+
+    .nav-item:hover {
+      background: var(--goldfade);
+      color: var(--text);
+    }
+
+    .nav-item:focus-visible {
+      outline: 2px solid var(--gold2);
+      outline-offset: -2px;
+    }
+
+    .nav-item.active {
+      background: var(--goldfade);
+      color: var(--gold);
+      border-left-color: var(--gold);
+    }
+
+    .nav-icon { font-size: 15px; width: 20px; text-align: center; flex-shrink: 0; }
+
+    .nav-badge {
+      margin-left: auto;
+      background: var(--red);
+      color: #fff;
+      padding: 2px 6px;
+      border-radius: 10px;
+      font-size: 9px;
+      font-family: var(--font-m);
+      line-height: 1.4;
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+      font-family: var(--font-m);
+      font-size: 10px;
+      color: var(--text3);
+      line-height: 1.7;
+      flex-shrink: 0;
+    }
+
+    .agent-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--gold);
+      margin-top: 6px;
+    }
+
+    .status-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      flex-shrink: 0;
+      animation: breathe 2s ease-in-out infinite;
+    }
+
+    @keyframes breathe {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(46,204,138,0.5); }
+      50%       { box-shadow: 0 0 0 4px rgba(46,204,138,0); }
+    }
+
+    /* ══ MAIN ══ */
+    .main {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      height: 100vh;
+    }
+
+    /* Top bar */
+    .topbar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .company-selector {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .company-name {
+      font-family: var(--font-d);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .company-plan {
+      background: var(--goldfade);
+      border: 1px solid var(--goldring);
+      color: var(--gold);
+      font-family: var(--font-m);
+      font-size: 10px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Fix: refresh button — rotate only the icon, not the label */
+    .refresh-btn {
+      background: transparent;
+      border: 1px solid var(--border2);
+      color: var(--text2);
+      font-family: var(--font-m);
+      font-size: 11px;
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: border-color 0.15s, color 0.15s;
+      letter-spacing: 0.5px;
+    }
+
+    .refresh-btn:hover { border-color: var(--gold2); color: var(--gold); }
+    .refresh-btn:focus-visible { outline: 2px solid var(--gold2); outline-offset: 2px; }
+    .refresh-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .refresh-icon {
+      display: inline-block;
+      transition: transform 0.6s ease;
+    }
+
+    .refresh-btn.spinning .refresh-icon {
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .user-avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--border2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      color: var(--text2);
+      cursor: pointer;
+      border: 1px solid var(--border2);
+      transition: border-color 0.15s;
+    }
+
+    .user-avatar:hover { border-color: var(--gold2); }
+
+    /* Auto-refresh countdown chip */
+    .refresh-countdown {
+      font-family: var(--font-m);
+      font-size: 10px;
+      color: var(--text3);
+      letter-spacing: 0.5px;
+    }
+
+    /* ══ CONTENT AREA ══ */
+    .content {
+      padding: 24px 28px;
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* ══ KPI CARDS ══ */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .kpi-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 20px;
+      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Gold accent strip on right — fix: use pseudo-element correctly */
+    .kpi-card::after {
+      content: '';
+      position: absolute;
+      top: 0; right: 0;
+      width: 3px; height: 100%;
+      background: linear-gradient(180deg, var(--gold), var(--gold2));
+      opacity: 0;
+      transition: opacity 0.2s;
+      border-radius: 0 10px 10px 0;
+    }
+
+    .kpi-card:hover {
+      border-color: var(--gold2);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(0,0,0,0.35);
+    }
+
+    .kpi-card:hover::after { opacity: 1; }
+
+    .kpi-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .kpi-title {
+      font-family: var(--font-m);
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text3);
+    }
+
+    .kpi-icon { font-size: 17px; }
+
+    .kpi-value {
+      font-family: var(--font-d);
+      font-size: 38px;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1;
+      margin-bottom: 6px;
+      transition: color 0.3s;
+    }
+
+    /* Animate value on update */
+    .kpi-value.updated { color: var(--gold3); }
+
+    .kpi-trend {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-family: var(--font-m);
+      font-size: 11px;
+      color: var(--text3);
+    }
+
+    .trend-up   { color: var(--green); }
+    .trend-down { color: var(--red); }
+    .trend-flat { color: var(--text3); }
+
+    /* ══ SECTION HEADERS ══ */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-d);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.3px;
+    }
+
+    .section-title em { font-style: normal; color: var(--gold); }
+
+    .add-btn {
+      background: var(--goldfade);
+      border: 1px solid var(--goldring);
+      color: var(--gold);
+      font-family: var(--font-m);
+      font-size: 11px;
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s, transform 0.15s;
+      letter-spacing: 0.5px;
+    }
+
+    .add-btn:hover { background: var(--goldring); transform: translateY(-1px); }
+    .add-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+    /* ══ CAMPAIGN CARDS ══ */
+    .campaign-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* Fix: campaign cards are buttons, not divs with onclick */
+    .campaign-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 20px;
+      transition: border-color 0.15s, background 0.15s;
+      cursor: pointer;
+      text-align: left;
+      width: 100%;
+      font-family: var(--font-b);
+      color: inherit;
+    }
+
+    .campaign-card:hover { border-color: var(--gold2); background: var(--goldfade); }
+    .campaign-card:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+    .campaign-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .campaign-name {
+      font-family: var(--font-d);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .campaign-status {
+      font-family: var(--font-m);
+      font-size: 10px;
+      padding: 3px 9px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+    }
+
+    .campaign-status.active {
+      background: rgba(46,204,138,0.1);
+      color: var(--green);
+      border: 1px solid rgba(46,204,138,0.25);
+    }
+
+    .campaign-status.paused {
+      background: rgba(255,179,71,0.1);
+      color: var(--amber);
+      border: 1px solid rgba(255,179,71,0.25);
+    }
+
+    .campaign-stats {
+      display: flex;
+      gap: 18px;
+      margin-bottom: 10px;
+      font-size: 12px;
+      color: var(--text2);
+      flex-wrap: wrap;
+    }
+
+    .stat-item { display: flex; align-items: center; gap: 4px; }
+    .stat-value { font-weight: 600; color: var(--text); }
+
+    .progress-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .progress-bar {
+      flex: 1;
+      height: 5px;
+      background: var(--border2);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--gold2), var(--gold));
+      border-radius: 3px;
+      transition: width 0.5s cubic-bezier(0.34, 1.2, 0.64, 1);
+    }
+
+    .progress-label {
+      font-family: var(--font-m);
+      font-size: 11px;
+      color: var(--gold);
+      min-width: 32px;
+      text-align: right;
+    }
+
+    /* ══ THREE-COLUMN WIDGETS ══ */
+    .widget-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+    }
+
+    .widget {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      transition: border-color 0.2s;
+    }
+
+    .widget:hover { border-color: var(--gold2); }
+
+    .widget-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .widget-icon { font-size: 16px; }
+
+    .widget-title {
+      font-family: var(--font-m);
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text3);
+    }
+
+    .widget-count {
+      margin-left: auto;
+      font-family: var(--font-m);
+      font-size: 10px;
+      color: var(--gold2);
+      background: var(--goldfade);
+      padding: 2px 7px;
+      border-radius: 10px;
+      border: 1px solid var(--goldring);
+    }
+
+    /* Pending replies */
+    /* Fix: reply items are buttons */
+    .reply-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      background: transparent;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+      width: 100%;
+      text-align: left;
+      font-family: var(--font-b);
+      color: inherit;
+      gap: 10px;
+      transition: background 0.1s;
+      border-radius: 4px;
+      margin: 0 -4px;
+      padding-left: 4px;
+      padding-right: 4px;
+    }
+
+    .reply-item:last-child { border-bottom: none; }
+    .reply-item:hover { background: var(--goldfade); }
+    .reply-item:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; }
+
+    .reply-info { flex: 1; min-width: 0; }
+
+    .reply-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .reply-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 2px;
+    }
+
+    .reply-company { font-size: 11px; color: var(--text2); }
+
+    .reply-time {
+      font-family: var(--font-m);
+      font-size: 10px;
+      color: var(--text3);
+    }
+
+    .reply-badge {
+      font-family: var(--font-m);
+      font-size: 9px;
+      padding: 2px 7px;
+      border-radius: 3px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      background: rgba(232,184,75,0.1);
+      color: var(--amber);
+      border: 1px solid rgba(232,184,75,0.2);
+    }
+
+    .reply-badge.hot       { background: rgba(232,75,106,0.1); color: var(--red);   border-color: rgba(232,75,106,0.25); }
+    .reply-badge.qualified { background: rgba(46,204,138,0.1); color: var(--green); border-color: rgba(46,204,138,0.25); }
+
+    /* Meetings */
+    .meeting-item {
+      padding: 10px 4px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background 0.1s;
+      display: block;
+      background: transparent;
+      border-left: none;
+      border-right: none;
+      border-top: none;
+      width: 100%;
+      text-align: left;
+      font-family: var(--font-b);
+      color: inherit;
+    }
+
+    .meeting-item:last-child { border-bottom: none; }
+    .meeting-item:hover { background: var(--goldfade); }
+    .meeting-item:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; }
+
+    .meeting-time {
+      font-family: var(--font-m);
+      font-size: 11px;
+      color: var(--green);
+      margin-bottom: 3px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .meeting-time.pending { color: var(--amber); }
+
+    .meeting-name  { font-size: 13px; font-weight: 600; color: var(--text); }
+    .meeting-company { font-size: 11px; color: var(--text2); margin-top: 1px; }
+    .meeting-attendees { font-size: 10px; color: var(--text3); margin-top: 2px; font-family: var(--font-m); }
+
+    /* Activity feed */
+    .activity-item {
+      display: flex;
+      gap: 10px;
+      padding: 9px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .activity-item:last-child { border-bottom: none; }
+
+    .activity-icon {
+      font-size: 14px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .activity-content { flex: 1; min-width: 0; }
+
+    .activity-text {
+      font-size: 12px;
+      color: var(--text);
+      margin-bottom: 2px;
+      line-height: 1.4;
+    }
+
+    .activity-target { color: var(--gold); font-weight: 500; }
+
+    .activity-time {
+      font-family: var(--font-m);
+      font-size: 10px;
+      color: var(--text3);
+    }
+
+    /* ══ LOADING STATES ══ */
+    /* Fix: loading state doesn't hide content, uses skeleton shimmer */
+    .skeleton {
+      background: linear-gradient(90deg, var(--border) 25%, var(--border2) 50%, var(--border) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 4px;
+    }
+
+    @keyframes shimmer {
+      from { background-position: 200% 0; }
+      to   { background-position: -200% 0; }
+    }
+
+    .spinner {
+      width: 13px; height: 13px;
+      border: 2px solid var(--border2);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    /* ══ EMPTY STATES ══ */
+    .empty-state {
+      padding: 20px;
+      text-align: center;
+      color: var(--text3);
+      font-family: var(--font-m);
+      font-size: 11px;
+      line-height: 1.6;
+    }
+
+    /* ══ TOAST NOTIFICATIONS ══ */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+    }
+
+    .toast {
+      background: var(--surface3);
+      border: 1px solid var(--border2);
+      border-left: 3px solid var(--green);
+      border-radius: 8px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      min-width: 280px;
+      max-width: 360px;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.5);
+      pointer-events: all;
+      animation: toastIn 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    .toast.leaving {
+      animation: toastOut 0.25s ease forwards;
+    }
+
+    /* Fix: separate in/out animations — don't reverse the same animation */
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateX(20px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes toastOut {
+      from { opacity: 1; transform: translateX(0);    max-height: 100px; }
+      to   { opacity: 0; transform: translateX(20px); max-height: 0; padding: 0; margin: 0; }
+    }
+
+    .toast.warn  { border-left-color: var(--amber); }
+    .toast.error { border-left-color: var(--red); }
+    .toast.info  { border-left-color: var(--blue); }
+
+    .toast-icon { font-size: 15px; flex-shrink: 0; }
+
+    .toast-content { flex: 1; }
+    .toast-title   { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+    .toast-msg     { font-size: 11px; color: var(--text2); line-height: 1.4; }
+
+    /* ══ TOOLTIPS ══
+       Fix: use :after for tooltip (renders above :before in stacking) */
+    [data-tooltip] { position: relative; }
+
+    [data-tooltip]::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 5px 9px;
+      background: var(--surface3);
+      border: 1px solid var(--border2);
+      border-radius: 5px;
+      font-family: var(--font-m);
+      font-size: 10px;
+      color: var(--text2);
+      white-space: nowrap;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s;
+    }
+
+    [data-tooltip]:hover::after { opacity: 1; }
+
+    /* ══ SCROLLBAR ══ */
+    ::-webkit-scrollbar         { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track   { background: transparent; }
+    ::-webkit-scrollbar-thumb   { background: var(--border2); border-radius: 2px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--border3); }
+
+    /* ══ RESPONSIVE ══ */
+    @media (max-width: 1200px) {
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 900px) {
+      .dashboard { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .widget-row { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 600px) {
+      .kpi-grid { grid-template-columns: 1fr 1fr; }
+      .content  { padding: 16px; }
+      .topbar   { padding: 12px 16px; }
+      .company-plan { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="dashboard">
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar" aria-label="Main navigation">
+    <div class="logo-area">
+      <div class="logo-badge" aria-hidden="true">
+        <div class="logo-dot"></div>
+        CLIENTS · ACME CORP
+      </div>
+      <div class="logo-name">Soldiro<span>AI</span></div>
+      <div class="logo-sub">autonomous sales agent</div>
+    </div>
+
+    <nav class="nav-section" aria-label="Primary">
+      <div class="nav-label" id="nav-main-label">Main</div>
+      <button class="nav-item active" aria-current="page" aria-describedby="nav-main-label">
+        <span class="nav-icon" aria-hidden="true">📊</span>
+        Dashboard
+      </button>
+      <button class="nav-item" aria-describedby="nav-main-label">
+        <span class="nav-icon" aria-hidden="true">🎯</span>
+        Campaigns
+      </button>
+      <button class="nav-item" aria-describedby="nav-main-label">
+        <span class="nav-icon" aria-hidden="true">💬</span>
+        Inbox
+        <span class="nav-badge" aria-label="3 unread messages">3</span>
+      </button>
+      <button class="nav-item" aria-describedby="nav-main-label">
+        <span class="nav-icon" aria-hidden="true">📅</span>
+        Meetings
+      </button>
+      <button class="nav-item" aria-describedby="nav-main-label">
+        <span class="nav-icon" aria-hidden="true">📈</span>
+        Analytics
+      </button>
+    </nav>
+
+    <nav class="nav-section" aria-label="Settings">
+      <div class="nav-label" id="nav-settings-label">Settings</div>
+      <button class="nav-item" aria-describedby="nav-settings-label">
+        <span class="nav-icon" aria-hidden="true">⚙️</span>
+        Integrations
+      </button>
+      <button class="nav-item" aria-describedby="nav-settings-label">
+        <span class="nav-icon" aria-hidden="true">👥</span>
+        Team
+      </button>
+      <button class="nav-item" aria-describedby="nav-settings-label">
+        <span class="nav-icon" aria-hidden="true">💳</span>
+        Billing
+      </button>
+    </nav>
+
+    <div class="sidebar-footer" aria-live="polite">
+      <div>v2.1.0 · Growth plan</div>
+      <div id="lastSync">Last sync: 2 min ago</div>
+      <div class="agent-status">
+        <span class="status-dot" aria-hidden="true"></span>
+        Agent active · 24/7
+      </div>
+      <div style="margin-top:8px;color:var(--gold);font-size:9px;font-family:var(--font-m)">
+        ● 4 campaigns running
+      </div>
+    </div>
+  </aside>
+
+  <!-- ══ MAIN ══ -->
+  <main class="main" id="main">
+
+    <!-- Top bar -->
+    <div class="topbar" role="banner">
+      <div class="company-selector">
+        <div class="company-name">Acme Corporation</div>
+        <div class="company-plan">GROWTH · $549/mo</div>
+      </div>
+      <div class="topbar-actions">
+        <span class="refresh-countdown" id="refreshCountdown" aria-live="polite" aria-atomic="true">
+          Auto in <strong id="countdownSecs">30</strong>s
+        </span>
+        <button
+          class="refresh-btn"
+          id="refreshBtn"
+          onclick="refreshDashboard()"
+          aria-label="Refresh dashboard data"
+          data-tooltip="Refresh (Ctrl+R)"
+        >
+          <span class="refresh-icon" aria-hidden="true">↻</span>
+          <span id="refreshLabel">Refresh</span>
+        </button>
+        <div
+          class="user-avatar"
+          role="button"
+          tabindex="0"
+          aria-label="Account settings"
+          data-tooltip="Account"
+        >👤</div>
+      </div>
+    </div>
+
+    <!-- Dashboard content -->
+    <div class="content" id="dashboardContent" role="region" aria-label="Dashboard">
+
+      <!-- KPI Section -->
+      <section aria-labelledby="kpi-heading">
+        <div class="section-header">
+          <h2 class="section-title" id="kpi-heading">
+            <span aria-hidden="true">📊</span>
+            Today's <em>Snapshot</em>
+          </h2>
+        </div>
+        <div class="kpi-grid" id="kpiGrid" aria-live="polite" aria-atomic="false">
+          <!-- populated by JS -->
+        </div>
+      </section>
+
+      <!-- Active Campaigns -->
+      <section aria-labelledby="campaigns-heading">
+        <div class="section-header">
+          <h2 class="section-title" id="campaigns-heading">
+            <span aria-hidden="true">🎯</span>
+            Active <em>Campaigns</em>
+          </h2>
+          <button class="add-btn" onclick="createCampaign()" aria-label="Create new campaign">
+            <span aria-hidden="true">+</span> New Campaign
+          </button>
+        </div>
+        <div class="campaign-list" id="campaignList">
+          <!-- populated by JS -->
+        </div>
+      </section>
+
+      <!-- Three-column widgets -->
+      <div class="widget-row">
+        <!-- Pending Replies -->
+        <section class="widget" aria-labelledby="replies-heading">
+          <div class="widget-header">
+            <span class="widget-icon" aria-hidden="true">⏳</span>
+            <span class="widget-title" id="replies-heading">Pending Replies</span>
+            <span class="widget-count" id="replyCount" aria-label="3 pending replies">3</span>
+          </div>
+          <div id="pendingReplies" role="list" aria-live="polite">
+            <!-- populated by JS -->
+          </div>
+        </section>
+
+        <!-- Next Meetings -->
+        <section class="widget" aria-labelledby="meetings-heading">
+          <div class="widget-header">
+            <span class="widget-icon" aria-hidden="true">📅</span>
+            <span class="widget-title" id="meetings-heading">Next Meetings</span>
+            <span class="widget-count" id="meetingCount" aria-label="3 upcoming meetings">3</span>
+          </div>
+          <div id="nextMeetings" role="list" aria-live="polite">
+            <!-- populated by JS -->
+          </div>
+        </section>
+
+        <!-- Recent Activity -->
+        <section class="widget" aria-labelledby="activity-heading">
+          <div class="widget-header">
+            <span class="widget-icon" aria-hidden="true">⚡</span>
+            <span class="widget-title" id="activity-heading">Recent Activity</span>
+          </div>
+          <div id="recentActivity" role="log" aria-live="polite" aria-label="Activity feed">
+            <!-- populated by JS -->
+          </div>
+        </section>
+      </div>
+
+    </div><!-- /content -->
+  </main>
+</div>
+
+<!-- Toast container -->
+<div class="toast-container" id="toastContainer" role="status" aria-live="polite" aria-atomic="false"></div>
+
+<script>
+  /* ═══════════════════════════════════════
+     STATE
+  ═══════════════════════════════════════ */
+  let isLoading = false;
+  let countdownTimer = null;
+  let countdownValue = 30;
+  const AUTO_REFRESH_INTERVAL = 30; // seconds
+
+  // Separate data from mock generation — makes it easy to swap with real API
+  let dashboardData = {
+    kpis: {
+      leadsToday:      { value: 142, trend: +12, icon: '👥', label: 'Leads Today' },
+      emailsSent:      { value: 18,  trend: +5,  icon: '✉️', label: 'Emails Sent' },
+      repliesReceived: { value: 4,   trend: +2,  icon: '💬', label: 'Replies' },
+      meetingsBooked:  { value: 2,   trend: +1,  icon: '📅', label: 'Meetings' },
+    },
+    campaigns: [
+      { id: 1, name: 'Q1 Enterprise Outreach',  leadsProcessed: 250, totalLeads: 500, meetings: 8, replyRate: 12, status: 'active' },
+      { id: 2, name: 'SaaS Series A Founders',  leadsProcessed: 180, totalLeads: 300, meetings: 6, replyRate: 14, status: 'active' },
+      { id: 3, name: 'Fintech Decision Makers', leadsProcessed: 95,  totalLeads: 250, meetings: 3, replyRate: 9,  status: 'active' },
+    ],
+    pendingReplies: [
+      { id: 'r1', name: 'Sarah Chen',  company: 'Stripe',  time: '2h ago',  type: 'hot' },
+      { id: 'r2', name: 'Marcus Webb', company: 'Linear',  time: '5h ago',  type: 'qualified' },
+      { id: 'r3', name: 'Priya Nair',  company: 'Figma',   time: '1d ago',  type: 'warm' },
+    ],
+    nextMeetings: [
+      { id: 'm1', name: 'Mike Thompson',  company: 'Vercel',    time: 'Today 2:00 PM',   attendees: 3, status: 'confirmed' },
+      { id: 'm2', name: 'James Okafor',   company: 'Paystack',  time: 'Tomorrow 11:00 AM', attendees: 2, status: 'confirmed' },
+      { id: 'm3', name: 'Elena Rodriguez',company: 'Rippling',  time: 'Wed 10:30 AM',    attendees: 4, status: 'pending' },
+    ],
+    recentActivity: [
+      { id: 'a1', type: 'email',    target: 'Stripe',  detail: 'Email sent to Sarah Chen',            time: '15 min ago' },
+      { id: 'a2', type: 'reply',    target: 'Linear',  detail: 'Reply from Marcus Webb',              time: '45 min ago' },
+      { id: 'a3', type: 'meeting',  target: 'Figma',   detail: 'Meeting booked with Priya Nair',      time: '2h ago' },
+      { id: 'a4', type: 'campaign', target: 'Fintech', detail: 'Campaign reached 50% completion',     time: '3h ago' },
+      { id: 'a5', type: 'email',    target: 'Rippling',detail: 'Email opened by Elena R.',            time: '4h ago' },
+      { id: 'a6', type: 'bant',     target: 'Stripe',  detail: 'Sarah Chen qualified (BANT 4/4)',     time: '5h ago' },
+    ],
+  };
+
+  /* ═══════════════════════════════════════
+     RENDER
+  ═══════════════════════════════════════ */
+  function renderDashboard() {
+    renderKPIs();
+    renderCampaigns();
+    renderPendingReplies();
+    renderNextMeetings();
+    renderRecentActivity();
+    updateWidgetCounts();
+  }
+
+  function updateWidgetCounts() {
+    document.getElementById('replyCount').textContent   = dashboardData.pendingReplies.length;
+    document.getElementById('replyCount').setAttribute('aria-label', `${dashboardData.pendingReplies.length} pending replies`);
+    document.getElementById('meetingCount').textContent = dashboardData.nextMeetings.length;
+    document.getElementById('meetingCount').setAttribute('aria-label', `${dashboardData.nextMeetings.length} upcoming meetings`);
+  }
+
+  function renderKPIs() {
+    const grid = document.getElementById('kpiGrid');
+    const kpis = dashboardData.kpis;
+
+    const cards = Object.values(kpis).map(kpi => {
+      const trendDir  = kpi.trend > 0 ? 'up' : kpi.trend < 0 ? 'down' : 'flat';
+      const trendIcon = kpi.trend > 0 ? '▲' : kpi.trend < 0 ? '▼' : '—';
+      const trendAbs  = Math.abs(kpi.trend);
+      return `
+        <div class="kpi-card" role="figure" aria-label="${kpi.label}: ${kpi.value}">
+          <div class="kpi-header">
+            <span class="kpi-title">${kpi.label}</span>
+            <span class="kpi-icon" aria-hidden="true">${kpi.icon}</span>
+          </div>
+          <div class="kpi-value" data-key="${kpi.label}">${kpi.value}</div>
+          <div class="kpi-trend" aria-label="Trend: ${trendDir === 'up' ? 'up' : trendDir === 'down' ? 'down' : 'flat'} ${trendAbs} vs yesterday">
+            <span class="trend-${trendDir}">${trendIcon} ${trendAbs}</span>
+            <span>vs yesterday</span>
+          </div>
+        </div>`;
+    });
+
+    grid.innerHTML = cards.join('');
+  }
+
+  function renderCampaigns() {
+    const list = document.getElementById('campaignList');
+    if (!dashboardData.campaigns.length) {
+      list.innerHTML = '<div class="empty-state">🎯 No active campaigns yet. Create one to get started.</div>';
+      return;
+    }
+
+    list.innerHTML = dashboardData.campaigns.map(c => {
+      const pct = Math.min(100, Math.round((c.leadsProcessed / c.totalLeads) * 100));
+      // Fix: use textContent-safe escaping for campaign name
+      return `
+        <button class="campaign-card" onclick="viewCampaign(${c.id})" aria-label="${esc(c.name)}: ${pct}% complete, ${c.meetings} meetings, ${c.replyRate}% reply rate">
+          <div class="campaign-header">
+            <span class="campaign-name">${esc(c.name)}</span>
+            <span class="campaign-status ${c.status}">● ${c.status.toUpperCase()}</span>
+          </div>
+          <div class="campaign-stats">
+            <span class="stat-item"><span class="stat-value">${c.leadsProcessed}</span>/${c.totalLeads} leads</span>
+            <span class="stat-item"><span class="stat-value">${c.meetings}</span> meetings</span>
+            <span class="stat-item"><span class="stat-value">${c.replyRate}%</span> reply rate</span>
+          </div>
+          <div class="progress-wrap" aria-hidden="true">
+            <div class="progress-bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100">
+              <div class="progress-fill" style="width:${pct}%"></div>
+            </div>
+            <span class="progress-label">${pct}%</span>
+          </div>
+        </button>`;
+    }).join('');
+  }
+
+  const REPLY_LABELS = { hot: '🔥 Hot', qualified: '✅ Qualified', warm: '● New' };
+
+  function renderPendingReplies() {
+    const el = document.getElementById('pendingReplies');
+    if (!dashboardData.pendingReplies.length) {
+      el.innerHTML = '<div class="empty-state">✨ No pending replies — all caught up!</div>';
+      return;
+    }
+    el.innerHTML = dashboardData.pendingReplies.map(r => `
+      <button class="reply-item" role="listitem" onclick="handleReply('${esc(r.name)}')" aria-label="Reply from ${esc(r.name)} at ${esc(r.company)}, ${r.type} lead, ${r.time}">
+        <div class="reply-info">
+          <div class="reply-name">${esc(r.name)}</div>
+          <div class="reply-meta">
+            <span class="reply-company">${esc(r.company)}</span>
+            <span class="reply-time">${r.time}</span>
+          </div>
+        </div>
+        <span class="reply-badge ${r.type}" aria-hidden="true">${REPLY_LABELS[r.type] || r.type}</span>
+      </button>`).join('');
+  }
+
+  function renderNextMeetings() {
+    const el = document.getElementById('nextMeetings');
+    if (!dashboardData.nextMeetings.length) {
+      el.innerHTML = '<div class="empty-state">📅 No upcoming meetings scheduled.</div>';
+      return;
+    }
+    el.innerHTML = dashboardData.nextMeetings.map(m => `
+      <button class="meeting-item" role="listitem" onclick="viewMeeting('${esc(m.name)}')" aria-label="${esc(m.name)} from ${esc(m.company)}, ${m.time}, ${m.attendees} attendees, ${m.status}">
+        <div class="meeting-time ${m.status === 'pending' ? 'pending' : ''}">
+          ${m.status === 'pending' ? '⏳' : '📌'} ${esc(m.time)}
+        </div>
+        <div class="meeting-name">${esc(m.name)}</div>
+        <div class="meeting-company">${esc(m.company)}</div>
+        <div class="meeting-attendees">${m.attendees} attendees</div>
+      </button>`).join('');
+  }
+
+  const ACTIVITY_ICONS = { email: '✉️', reply: '💬', meeting: '📅', campaign: '🎯', bant: '✅' };
+
+  function renderRecentActivity() {
+    const el = document.getElementById('recentActivity');
+    if (!dashboardData.recentActivity.length) {
+      el.innerHTML = '<div class="empty-state">⚡ No recent activity.</div>';
+      return;
+    }
+    el.innerHTML = dashboardData.recentActivity.slice(0, 8).map(a => {
+      // Fix: safe target highlight — don't use .replace() on user data with unescaped HTML
+      const safeDetail = esc(a.detail);
+      const safeTarget = esc(a.target);
+      const highlighted = safeDetail.replace(safeTarget, `<span class="activity-target">${safeTarget}</span>`);
+      return `
+        <div class="activity-item" role="listitem">
+          <span class="activity-icon" aria-hidden="true">${ACTIVITY_ICONS[a.type] || '⚡'}</span>
+          <div class="activity-content">
+            <div class="activity-text">${highlighted}</div>
+            <div class="activity-time">${a.time}</div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  /* ═══════════════════════════════════════
+     ACTIONS
+  ═══════════════════════════════════════ */
+  async function refreshDashboard() {
+    if (isLoading) return;
+    isLoading = true;
+
+    const btn = document.getElementById('refreshBtn');
+    const label = document.getElementById('refreshLabel');
+    btn.disabled = true;
+    btn.classList.add('spinning');
+    label.textContent = 'Refreshing…';
+
+    // Simulate API call — replace with real fetch()
+    await delay(1200);
+
+    // Mock data delta — replace with API response
+    dashboardData.kpis.leadsToday.value      += randInt(1, 6);
+    dashboardData.kpis.emailsSent.value       += randInt(0, 4);
+    dashboardData.kpis.repliesReceived.value  += randInt(0, 2);
+
+    const MOCK_COMPANIES = ['Stripe', 'Vercel', 'Linear', 'Figma', 'Rippling', 'Brex', 'Notion', 'Loom'];
+    const MOCK_NAMES = ['Sarah Chen', 'Marcus Webb', 'Priya Nair', 'Mike T.', 'James O.', 'Elena R.'];
+    const newActivity = {
+      id: 'a' + Date.now(),
+      type: Math.random() > 0.5 ? 'email' : 'reply',
+      target: MOCK_COMPANIES[randInt(0, MOCK_COMPANIES.length)],
+      detail: '',
+      time: 'Just now',
+    };
+    newActivity.detail = `${newActivity.type === 'email' ? 'Email sent to' : 'Reply from'} ${MOCK_NAMES[randInt(0, MOCK_NAMES.length)]}`;
+
+    dashboardData.recentActivity.unshift(newActivity);
+    dashboardData.recentActivity = dashboardData.recentActivity.slice(0, 8);
+
+    renderDashboard();
+    flashKPIs();
+
+    btn.classList.remove('spinning');
+    btn.disabled = false;
+    label.textContent = 'Refresh';
+    isLoading = false;
+
+    // Reset countdown
+    resetCountdown();
+    updateLastSync();
+    showToast('Dashboard Updated', 'Latest metrics loaded', 'success');
+  }
+
+  function flashKPIs() {
+    // Briefly highlight KPI values to signal an update
+    document.querySelectorAll('.kpi-value').forEach(el => {
+      el.classList.add('updated');
+      setTimeout(() => el.classList.remove('updated'), 600);
+    });
+  }
+
+  function createCampaign() {
+    showToast('New Campaign', 'Campaign builder coming soon…', 'info');
+  }
+
+  function viewCampaign(id) {
+    const c = dashboardData.campaigns.find(c => c.id === id);
+    if (c) showToast(c.name, `${c.leadsProcessed} leads processed · ${c.replyRate}% reply rate`, 'info');
+  }
+
+  function handleReply(name) {
+    showToast('Opening Conversation', `Loading thread with ${name}…`, 'info');
+  }
+
+  function viewMeeting(name) {
+    showToast('Meeting Details', `Viewing meeting with ${name}`, 'info');
+  }
+
+  /* ═══════════════════════════════════════
+     COUNTDOWN TIMER
+  ═══════════════════════════════════════ */
+  function startCountdown() {
+    countdownValue = AUTO_REFRESH_INTERVAL;
+    updateCountdownDisplay();
+    countdownTimer = setInterval(() => {
+      countdownValue--;
+      updateCountdownDisplay();
+      if (countdownValue <= 0) {
+        refreshDashboard();
+      }
+    }, 1000);
+  }
+
+  function resetCountdown() {
+    clearInterval(countdownTimer);
+    startCountdown();
+  }
+
+  function updateCountdownDisplay() {
+    const el = document.getElementById('countdownSecs');
+    if (el) el.textContent = countdownValue;
+  }
+
+  function updateLastSync() {
+    document.getElementById('lastSync').textContent = 'Last sync: just now';
+    setTimeout(() => {
+      document.getElementById('lastSync').textContent = 'Last sync: < 1 min ago';
+    }, 60000);
+  }
+
+  /* ═══════════════════════════════════════
+     TOAST
+  ═══════════════════════════════════════ */
+  const TOAST_ICONS = { success: '✅', info: 'ℹ️', warn: '⚠️', error: '❌' };
+
+  function showToast(title, message, type = 'success') {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.setAttribute('role', 'status');
+    // Fix: set text via DOM, not innerHTML, to avoid XSS on dynamic content
+    const iconEl = document.createElement('div');
+    iconEl.className = 'toast-icon';
+    iconEl.setAttribute('aria-hidden', 'true');
+    iconEl.textContent = TOAST_ICONS[type] || '●';
+
+    const contentEl = document.createElement('div');
+    contentEl.className = 'toast-content';
+
+    const titleEl = document.createElement('div');
+    titleEl.className = 'toast-title';
+    titleEl.textContent = title;
+
+    const msgEl = document.createElement('div');
+    msgEl.className = 'toast-msg';
+    msgEl.textContent = message;
+
+    contentEl.append(titleEl, msgEl);
+    toast.append(iconEl, contentEl);
+    container.appendChild(toast);
+
+    // Fix: use dedicated leaving animation, not animation reversal
+    setTimeout(() => {
+      toast.classList.add('leaving');
+      toast.addEventListener('animationend', () => toast.remove(), { once: true });
+    }, 3200);
+  }
+
+  /* ═══════════════════════════════════════
+     UTILITIES
+  ═══════════════════════════════════════ */
+  // Safe HTML escaping — use for all user/API data in templates
+  function esc(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  function randInt(min, max) {
+    return Math.floor(Math.random() * (max - min)) + min;
+  }
+
+  /* ═══════════════════════════════════════
+     KEYBOARD SHORTCUTS
+  ═══════════════════════════════════════ */
+  document.addEventListener('keydown', e => {
+    // Fix: was only capturing lowercase 'r' — Ctrl+Shift+R is browser refresh, use Ctrl+R safely
+    if ((e.ctrlKey || e.metaKey) && e.key === 'r' && !e.shiftKey) {
+      e.preventDefault();
+      refreshDashboard();
+    }
+  });
+
+  /* ═══════════════════════════════════════
+     INIT
+  ═══════════════════════════════════════ */
+  renderDashboard();
+  startCountdown();
+</script>
+</body>
+</html>

@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Soldiro AI — Revenue Infrastructure for Elite Revenue Teams</title>
+  <meta name="description" content="Soldiro AI is not an outbound tool. It's your Revenue Operating System — autonomous infrastructure that builds pipeline, qualifies buyers, and closes deals.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;800;900&family=Sora:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:        #07070a;
+      --surface:   #0d0d16;
+      --surface2:  #111119;
+      --surface3:  #181825;
+      --surface4:  #1e1e2e;
+      --border:    #1e1e2e;
+      --border2:   #2a2a3a;
+      --border3:   #38384e;
+      --gold:      #e8b84b;
+      --gold2:     #c49030;
+      --gold3:     #f5d07a;
+      --goldfade:  rgba(232,184,75,0.07);
+      --goldring:  rgba(232,184,75,0.18);
+      --red:       #e84b6a;
+      --redfade:   rgba(232,75,106,0.09);
+      --green:     #2ecc8a;
+      --greenfade: rgba(46,204,138,0.09);
+      --blue:      #4a8fff;
+      --bluefade:  rgba(74,143,255,0.09);
+      --purple:    #9b6dff;
+      --purpfade:  rgba(155,109,255,0.09);
+      --amber:     #ffb347;
+      --text:      #eae6f5;
+      --text2:     #a9a1c2;
+      --text3:     #6a6380;
+      --muted:     #43405c;
+      --font-d:    'Barlow Condensed', sans-serif;
+      --font-b:    'Sora', sans-serif;
+      --font-m:    'JetBrains Mono', monospace;
+    }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { background:var(--bg); color:var(--text); font-family:var(--font-b); font-size:14px; line-height:1.5; min-height:100vh; overflow-x:hidden; }
+
+    /* ── AMBIENT ── */
+    .amb { position:fixed; inset:0; pointer-events:none; z-index:0; }
+    .orb { position:absolute; border-radius:50%; filter:blur(130px); }
+    .orb-1 { width:800px; height:800px; background:radial-gradient(circle, rgba(232,184,75,0.055), transparent 65%); top:-280px; left:-260px; animation:f1 20s ease-in-out infinite; }
+    .orb-2 { width:600px; height:600px; background:radial-gradient(circle, rgba(155,109,255,0.045), transparent 65%); bottom:-160px; right:-160px; animation:f2 24s ease-in-out infinite; }
+    .orb-3 { width:450px; height:450px; background:radial-gradient(circle, rgba(46,204,138,0.03), transparent 65%); top:42%; left:44%; animation:f3 28s ease-in-out infinite; }
+    @keyframes f1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(70px,45px)} }
+    @keyframes f2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-50px,-65px)} }
+    @keyframes f3 { 0%,100%{transform:translate(0,0)} 33%{transform:translate(35px,-35px)} 66%{transform:translate(-25px,45px)} }
+    .grid { position:fixed; inset:0; pointer-events:none; z-index:0;
+      background-image:linear-gradient(rgba(30,30,46,0.35) 1px, transparent 1px), linear-gradient(90deg, rgba(30,30,46,0.35) 1px, transparent 1px);
+      background-size:64px 64px; mask-image:radial-gradient(ellipse 90% 90% at 50% 50%, transparent 0%, black 100%); }
+
+    /* ── NAVBAR ── */
+    .nav { display:flex; align-items:center; justify-content:space-between; padding:18px 44px; border-bottom:1px solid var(--border); background:rgba(7,7,10,0.88); backdrop-filter:blur(18px); position:sticky; top:0; z-index:200; }
+    .logo { display:flex; align-items:center; gap:10px; }
+    .logo-mark { width:34px; height:34px; background:var(--gold); color:var(--bg); font-family:var(--font-d); font-size:17px; font-weight:800; border-radius:7px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .logo-name { font-family:var(--font-d); font-size:19px; font-weight:700; }
+    .logo-name em { color:var(--gold); font-style:normal; }
+    .nav-links { display:flex; align-items:center; gap:28px; }
+    .nav-a { color:var(--text2); text-decoration:none; font-size:13px; transition:color 0.15s; }
+    .nav-a:hover,.nav-a.on { color:var(--gold); }
+    .nav-signal { display:flex; align-items:center; gap:7px; font-family:var(--font-m); font-size:10px; color:var(--text3); }
+    .pulse { width:6px; height:6px; border-radius:50%; background:var(--green); animation:gp 2s ease-in-out infinite; flex-shrink:0; }
+    @keyframes gp { 0%,100%{box-shadow:0 0 0 0 rgba(46,204,138,0.6)} 50%{box-shadow:0 0 0 5px rgba(46,204,138,0)} }
+    .nav-cta { padding:9px 20px; background:var(--gold); color:var(--bg); border:none; border-radius:7px; font-family:var(--font-m); font-size:11px; letter-spacing:.8px; text-transform:uppercase; cursor:pointer; transition:all 0.15s; }
+    .nav-cta:hover { background:var(--gold3); transform:translateY(-1px); }
+
+    /* ── PAGE ── */
+    .page { position:relative; z-index:1; }
+
+    /* ── HERO ── */
+    .hero { max-width:1120px; margin:0 auto; padding:60px 28px 0; display:grid; grid-template-columns:1fr 424px; gap:64px; align-items:start; }
+    .hero-left { padding-top:10px; }
+
+    .tag { display:inline-flex; align-items:center; gap:8px; font-family:var(--font-m); font-size:9px; letter-spacing:2.5px; text-transform:uppercase; color:var(--gold); padding:5px 14px; border:1px solid var(--goldring); border-radius:20px; background:var(--goldfade); margin-bottom:24px; }
+    .tag-blink { width:5px; height:5px; border-radius:50%; background:var(--gold); animation:bl 1.8s step-end infinite; }
+    @keyframes bl { 50%{opacity:0} }
+
+    .hero-title { font-family:var(--font-d); font-size:66px; font-weight:900; line-height:0.96; margin-bottom:18px; letter-spacing:-0.5px; }
+    .hero-title .accent { color:var(--gold); }
+    .hero-title .dim { color:var(--text2); }
+
+    .hero-divider { width:48px; height:2px; background:var(--gold2); border-radius:1px; margin:20px 0 22px; }
+
+    .hero-lede { font-size:16px; color:var(--text2); line-height:1.75; max-width:500px; margin-bottom:10px; }
+    .hero-lede strong { color:var(--text); }
+
+    .not-tool { display:flex; align-items:center; gap:10px; padding:12px 16px; background:var(--surface2); border:1px solid var(--border2); border-left:3px solid var(--gold2); border-radius:0 8px 8px 0; margin-bottom:32px; max-width:480px; }
+    .not-tool-text { font-size:13px; color:var(--text2); line-height:1.5; }
+    .not-tool-text strong { color:var(--gold); font-family:var(--font-d); font-size:16px; letter-spacing:.3px; }
+
+    /* Outcome stats */
+    .outcomes { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:32px; }
+    .oc { background:var(--surface2); border:1px solid var(--border); border-radius:11px; padding:14px 12px; }
+    .oc-val { font-family:var(--font-d); font-size:30px; font-weight:800; color:var(--gold); line-height:1; margin-bottom:4px; }
+    .oc-label { font-size:11px; color:var(--text2); line-height:1.4; }
+    .oc-sub { font-family:var(--font-m); font-size:8px; color:var(--text3); margin-top:4px; }
+
+    /* Infrastructure modules teaser */
+    .infra-strip { display:flex; flex-wrap:wrap; gap:7px; margin-bottom:28px; }
+    .infra-pill { display:inline-flex; align-items:center; gap:5px; padding:5px 11px; border:1px solid var(--border2); border-radius:20px; font-family:var(--font-m); font-size:9px; color:var(--text3); transition:all 0.15s; }
+    .infra-pill.core  { color:var(--green); border-color:rgba(46,204,138,0.25); background:var(--greenfade); }
+    .infra-pill.pro   { color:var(--gold2); border-color:var(--goldring); background:var(--goldfade); }
+    .infra-pill.ent   { color:var(--purple); border-color:rgba(155,109,255,0.25); background:var(--purpfade); }
+
+    /* Activity feed */
+    .feed-wrap { background:var(--surface2); border:1px solid var(--border); border-radius:11px; padding:12px 14px; margin-bottom:24px; overflow:hidden; height:106px; }
+    .feed-hd { font-family:var(--font-m); font-size:8px; letter-spacing:2px; text-transform:uppercase; color:var(--text3); margin-bottom:8px; display:flex; align-items:center; gap:6px; }
+    .feed-item { display:flex; align-items:center; gap:8px; padding:5px 0; border-bottom:1px solid var(--border); font-size:11px; color:var(--text2); animation:fi 0.4s ease both; }
+    .feed-item:last-child { border-bottom:none; }
+    @keyframes fi { from{opacity:0;transform:translateY(-7px)}to{opacity:1;transform:none} }
+    .f-av { width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--font-d); font-size:8px; font-weight:800; flex-shrink:0; }
+    .f-name { font-weight:600; color:var(--text); }
+    .f-time { font-family:var(--font-m); font-size:8px; color:var(--text3); margin-left:auto; white-space:nowrap; }
+
+    /* Urgency */
+    .urgency { background:var(--surface2); border:1px solid var(--goldring); border-radius:10px; padding:12px 15px; margin-bottom:20px; }
+    .urg-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; font-family:var(--font-m); font-size:9px; }
+    .urg-label { color:var(--amber); }
+    .urg-count { color:var(--red); font-weight:700; }
+    .urg-track { height:5px; background:var(--border2); border-radius:3px; overflow:hidden; }
+    .urg-fill { height:100%; border-radius:3px; background:linear-gradient(90deg, var(--green), var(--gold)); }
+    .urg-meta { display:flex; justify-content:space-between; margin-top:5px; font-family:var(--font-m); font-size:8px; color:var(--text3); }
+
+    /* Tier stack */
+    .tier-stack { display:flex; flex-direction:column; gap:7px; }
+    .tier-hd { font-family:var(--font-m); font-size:8px; letter-spacing:2px; text-transform:uppercase; color:var(--text3); margin-bottom:4px; }
+    .tier { display:flex; align-items:center; gap:11px; padding:10px 13px; background:var(--surface2); border:1px solid var(--border); border-radius:9px; transition:all 0.15s; }
+    .tier.live { border-color:var(--goldring); background:var(--goldfade); }
+    .tier.dim { opacity:0.4; }
+    .tier-ic { font-size:18px; flex-shrink:0; }
+    .tier-body { flex:1; }
+    .tier-name { font-family:var(--font-d); font-size:13px; font-weight:700; }
+    .tier-desc { font-family:var(--font-m); font-size:8px; color:var(--text3); margin-top:1px; }
+    .tier-badge { font-family:var(--font-m); font-size:7px; padding:3px 9px; border-radius:10px; border:1px solid; white-space:nowrap; letter-spacing:.3px; }
+
+    /* ── SIGNUP CARD ── */
+    .card { background:var(--surface2); border:1px solid var(--border2); border-radius:18px; padding:30px 26px; box-shadow:0 40px 100px rgba(0,0,0,0.7), 0 0 0 1px rgba(232,184,75,0.04); position:sticky; top:76px; }
+    .card-title { font-family:var(--font-d); font-size:22px; font-weight:800; margin-bottom:3px; }
+    .card-sub { font-family:var(--font-m); font-size:9px; color:var(--text3); margin-bottom:16px; }
+
+    /* Waitlist counter */
+    .wl-counter { display:flex; align-items:center; gap:10px; padding:10px 13px; background:var(--greenfade); border:1px solid rgba(46,204,138,0.22); border-radius:8px; margin-bottom:16px; }
+    .wl-num { font-family:var(--font-d); font-size:32px; font-weight:800; color:var(--green); line-height:1; }
+    .wl-txt { font-size:11px; color:var(--text2); line-height:1.45; }
+    .wl-txt strong { color:var(--green); }
+
+    /* Timer */
+    .timer { display:flex; align-items:center; justify-content:center; gap:5px; padding:9px; background:var(--surface3); border:1px solid var(--border2); border-radius:8px; margin-bottom:16px; }
+    .t-unit { text-align:center; }
+    .t-num { font-family:var(--font-d); font-size:24px; font-weight:800; color:var(--gold); line-height:1; min-width:38px; }
+    .t-lbl { font-family:var(--font-m); font-size:7px; letter-spacing:1px; text-transform:uppercase; color:var(--text3); }
+    .t-sep { font-family:var(--font-d); font-size:20px; color:var(--gold2); margin-bottom:10px; }
+
+    /* Form */
+    .fg { margin-bottom:13px; }
+    .fr { display:grid; grid-template-columns:1fr 1fr; gap:11px; }
+    .fl { display:block; font-family:var(--font-m); font-size:8px; letter-spacing:1.5px; text-transform:uppercase; color:var(--text3); margin-bottom:5px; }
+    .fi, .fs { width:100%; padding:10px 12px; background:var(--surface3); border:1px solid var(--border2); border-radius:7px; color:var(--text); font-family:var(--font-b); font-size:13px; outline:none; transition:all 0.15s; }
+    .fi:focus, .fs:focus { border-color:var(--gold2); box-shadow:0 0 0 3px rgba(232,184,75,0.07); }
+    .fi::placeholder { color:var(--muted); }
+    .fs { cursor:pointer; } .fs option { background:var(--surface2); }
+    .fi.err { border-color:var(--red); }
+
+    /* ICP */
+    .icp-lbl { font-family:var(--font-m); font-size:8px; letter-spacing:1.5px; text-transform:uppercase; color:var(--text3); margin-bottom:7px; }
+    .icp-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:13px; }
+    .icp-btn { padding:8px 5px; background:var(--surface3); border:1px solid var(--border2); border-radius:7px; color:var(--text3); font-family:var(--font-m); font-size:8px; letter-spacing:.3px; text-align:center; cursor:pointer; transition:all 0.12s; }
+    .icp-btn:hover { border-color:var(--border3); color:var(--text2); }
+    .icp-btn.sel { border-color:var(--goldring); background:var(--goldfade); color:var(--gold2); }
+    .icp-ic { font-size:15px; display:block; margin-bottom:3px; }
+
+    /* Ref */
+    .ref-row { display:flex; gap:7px; }
+    .ref-fi { flex:1; padding:9px 11px; background:var(--surface3); border:1px solid var(--border2); border-radius:7px; color:var(--text); font-family:var(--font-m); font-size:10px; outline:none; transition:all 0.15s; }
+    .ref-fi:focus { border-color:var(--gold2); }
+    .ref-fi::placeholder { color:var(--muted); }
+
+    /* Checkbox */
+    .ck-row { display:flex; align-items:center; gap:8px; margin:12px 0; }
+    .ck { width:16px; height:16px; border:1.5px solid var(--border2); border-radius:4px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all 0.12s; }
+    .ck.on { background:var(--gold); border-color:var(--gold); }
+    .ck-mk { font-size:9px; color:var(--bg); display:none; }
+    .ck.on .ck-mk { display:block; }
+    .ck-lbl { font-size:11px; color:var(--text3); line-height:1.4; }
+    .ck-lbl a { color:var(--gold2); text-decoration:none; }
+
+    /* CTA */
+    .cta-btn { width:100%; padding:15px; background:linear-gradient(135deg, var(--gold) 0%, var(--gold2) 100%); border:none; border-radius:10px; color:var(--bg); font-family:var(--font-d); font-size:22px; font-weight:900; letter-spacing:1px; cursor:pointer; transition:all 0.15s; position:relative; overflow:hidden; }
+    .cta-btn::after { content:''; position:absolute; inset:0; background:linear-gradient(135deg, rgba(255,255,255,0.12), transparent); }
+    .cta-btn:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 14px 32px rgba(232,184,75,0.35); filter:brightness(1.05); }
+    .cta-btn:disabled { opacity:0.55; cursor:not-allowed; transform:none; }
+    .card-foot { text-align:center; margin-top:9px; font-family:var(--font-m); font-size:8px; color:var(--text3); line-height:1.6; }
+
+    /* ── BODY SECTIONS ── */
+    .body { max-width:1120px; margin:0 auto; padding:72px 28px; }
+
+    /* Not a tool — manifesto */
+    .manifesto { background:var(--surface2); border:1px solid var(--border); border-radius:18px; padding:48px 56px; margin-bottom:72px; display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:center; position:relative; overflow:hidden; }
+    .manifesto::before { content:''; position:absolute; top:-60px; right:-60px; width:240px; height:240px; background:radial-gradient(circle, rgba(232,184,75,0.06), transparent 70%); border-radius:50%; pointer-events:none; }
+    .mf-label { font-family:var(--font-m); font-size:8px; letter-spacing:2.5px; text-transform:uppercase; color:var(--gold); margin-bottom:14px; }
+    .mf-title { font-family:var(--font-d); font-size:42px; font-weight:800; line-height:1.05; margin-bottom:16px; }
+    .mf-title span { color:var(--gold); }
+    .mf-body { font-size:14px; color:var(--text2); line-height:1.8; }
+    .mf-right { display:flex; flex-direction:column; gap:14px; }
+    .mf-point { display:flex; align-items:flex-start; gap:12px; padding:14px 16px; background:var(--surface3); border:1px solid var(--border2); border-radius:10px; }
+    .mf-ic { font-size:18px; flex-shrink:0; margin-top:1px; }
+    .mf-point-title { font-family:var(--font-d); font-size:15px; font-weight:700; margin-bottom:3px; }
+    .mf-point-desc { font-size:12px; color:var(--text2); line-height:1.6; }
+
+    /* Outcome pillars */
+    .sec-hd { text-align:center; margin-bottom:40px; }
+    .sec-ey { font-family:var(--font-m); font-size:9px; letter-spacing:2.5px; text-transform:uppercase; color:var(--gold); margin-bottom:10px; }
+    .sec-title { font-family:var(--font-d); font-size:42px; font-weight:800; }
+    .sec-title span { color:var(--gold); }
+    .sec-sub { font-size:15px; color:var(--text2); margin-top:10px; max-width:540px; margin-left:auto; margin-right:auto; line-height:1.6; }
+
+    .pillars { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-bottom:72px; }
+    .pillar { background:var(--surface2); border:1px solid var(--border); border-radius:14px; padding:26px 22px; transition:all 0.2s; position:relative; overflow:hidden; }
+    .pillar:hover { border-color:var(--border2); transform:translateY(-3px); }
+    .pillar-num { position:absolute; top:14px; right:18px; font-family:var(--font-d); font-size:52px; font-weight:900; color:var(--border2); line-height:1; pointer-events:none; }
+    .pillar-ic { font-size:28px; margin-bottom:14px; }
+    .pillar-title { font-family:var(--font-d); font-size:20px; font-weight:800; margin-bottom:10px; }
+    .pillar-body { font-size:12px; color:var(--text2); line-height:1.7; margin-bottom:14px; }
+    .pillar-outcome { font-family:var(--font-d); font-size:28px; font-weight:800; color:var(--gold); margin-bottom:2px; }
+    .pillar-outcome-lbl { font-family:var(--font-m); font-size:8px; color:var(--text3); }
+
+    /* Testimonials */
+    .tc-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:20px; margin-bottom:72px; }
+    .tc { background:var(--surface2); border:1px solid var(--border); border-radius:14px; padding:28px; transition:border-color 0.15s; position:relative; overflow:hidden; }
+    .tc:hover { border-color:var(--border2); }
+    .qm { position:absolute; top:12px; right:16px; font-family:var(--font-d); font-size:64px; font-weight:900; color:var(--border2); line-height:1; pointer-events:none; }
+    .tc-stars { color:var(--gold); font-size:12px; margin-bottom:10px; }
+    .tc-quote { font-size:13px; color:var(--text2); line-height:1.8; font-style:italic; margin-bottom:16px; }
+    .tc-author { display:flex; align-items:center; gap:10px; }
+    .tc-av { width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--font-d); font-size:13px; font-weight:800; flex-shrink:0; }
+    .tc-name { font-size:13px; font-weight:600; margin-bottom:1px; }
+    .tc-role { font-family:var(--font-m); font-size:8px; color:var(--text3); }
+    .tc-result { margin-top:14px; padding:9px 12px; border-radius:7px; font-family:var(--font-m); font-size:9px; }
+
+    /* Infrastructure map */
+    .infra-map { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:72px; }
+    .im { background:var(--surface2); border:1px solid var(--border); border-radius:11px; padding:16px 14px; }
+    .im-ic { font-size:22px; margin-bottom:8px; }
+    .im-name { font-family:var(--font-d); font-size:14px; font-weight:700; margin-bottom:4px; }
+    .im-desc { font-size:11px; color:var(--text3); line-height:1.5; }
+    .im-tier { font-family:var(--font-m); font-size:7px; padding:2px 8px; border-radius:4px; border:1px solid; display:inline-flex; margin-top:8px; letter-spacing:.5px; text-transform:uppercase; }
+
+    /* Performance alignment callout */
+    .perf-block { background:linear-gradient(135deg, var(--surface2), var(--surface3)); border:1px solid var(--goldring); border-radius:18px; padding:44px 52px; margin-bottom:72px; display:grid; grid-template-columns:1fr auto; gap:40px; align-items:center; }
+    .pb-label { font-family:var(--font-m); font-size:8px; letter-spacing:2.5px; text-transform:uppercase; color:var(--gold); margin-bottom:12px; }
+    .pb-title { font-family:var(--font-d); font-size:38px; font-weight:800; line-height:1.05; margin-bottom:14px; }
+    .pb-title span { color:var(--gold); }
+    .pb-body { font-size:14px; color:var(--text2); line-height:1.75; max-width:480px; }
+    .pb-cta { display:flex; flex-direction:column; align-items:center; gap:10px; }
+    .pb-btn { padding:14px 28px; background:var(--gold); border:none; border-radius:10px; color:var(--bg); font-family:var(--font-d); font-size:20px; font-weight:800; cursor:pointer; transition:all 0.15s; white-space:nowrap; }
+    .pb-btn:hover { background:var(--gold3); transform:translateY(-1px); box-shadow:0 10px 24px rgba(232,184,75,0.3); }
+    .pb-note { font-family:var(--font-m); font-size:9px; color:var(--text3); text-align:center; }
+
+    /* FAQ */
+    .faq-wrap { max-width:780px; margin:0 auto 72px; }
+    .faq-grid { display:grid; grid-template-columns:1fr 1fr; gap:13px; }
+    .faq { background:var(--surface2); border:1px solid var(--border); border-radius:11px; padding:18px; cursor:pointer; transition:all 0.15s; }
+    .faq:hover { border-color:var(--border2); }
+    .faq.open { border-color:var(--goldring); }
+    .faq-q { font-weight:600; font-size:13px; display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    .faq-arr { font-size:12px; color:var(--text3); transition:transform 0.2s; flex-shrink:0; }
+    .faq.open .faq-arr { transform:rotate(180deg); color:var(--gold); }
+    .faq-a { font-size:12px; color:var(--text2); line-height:1.7; max-height:0; overflow:hidden; transition:max-height 0.3s ease, margin 0.2s; }
+    .faq.open .faq-a { max-height:200px; margin-top:10px; }
+
+    /* ── SUCCESS OVERLAY ── */
+    .success-ov { position:fixed; inset:0; background:rgba(7,7,10,0.97); z-index:500; display:flex; align-items:center; justify-content:center; padding:24px; opacity:0; pointer-events:none; transition:opacity 0.3s; }
+    .success-ov.show { opacity:1; pointer-events:all; }
+    .success-modal { max-width:560px; width:100%; text-align:center; animation:si 0.5s cubic-bezier(0.34,1.2,0.64,1) both; }
+    @keyframes si { from{opacity:0;transform:translateY(28px) scale(0.96)}to{opacity:1;transform:none} }
+    .s-ring { width:84px; height:84px; border-radius:50%; background:var(--greenfade); border:1px solid rgba(46,204,138,0.28); display:flex; align-items:center; justify-content:center; font-size:38px; margin:0 auto 22px; animation:rp 2.2s ease-in-out infinite; }
+    @keyframes rp { 0%,100%{box-shadow:0 0 0 0 rgba(46,204,138,0.3)} 50%{box-shadow:0 0 0 18px rgba(46,204,138,0)} }
+    .s-title { font-family:var(--font-d); font-size:52px; font-weight:900; margin-bottom:10px; }
+    .s-title span { color:var(--green); }
+    .s-sub { font-size:15px; color:var(--text2); margin-bottom:24px; line-height:1.65; }
+    .pos-badge { display:inline-flex; align-items:baseline; gap:6px; padding:12px 26px; background:var(--goldfade); border:1px solid var(--goldring); border-radius:40px; margin-bottom:24px; }
+    .pos-num { font-family:var(--font-d); font-size:48px; font-weight:900; color:var(--gold); line-height:1; }
+    .pos-lbl { font-family:var(--font-m); font-size:11px; color:var(--text2); text-align:left; }
+    .s-unlocked { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:20px; }
+    .s-ul { display:flex; align-items:center; gap:8px; padding:9px 11px; background:var(--surface2); border:1px solid var(--border); border-radius:7px; font-size:11px; color:var(--text2); }
+    .s-ul-ic { font-size:13px; }
+    .ref-widget { background:var(--surface2); border:1px solid var(--border2); border-radius:14px; padding:20px 22px; margin-bottom:20px; }
+    .rw-title { font-family:var(--font-d); font-size:19px; font-weight:700; margin-bottom:5px; }
+    .rw-sub { font-size:11px; color:var(--text2); margin-bottom:14px; }
+    .rw-tiers { display:flex; flex-direction:column; gap:7px; margin-bottom:14px; }
+    .rw-t { display:flex; align-items:center; gap:9px; padding:8px 11px; border-radius:7px; border:1px solid var(--border2); font-size:11px; color:var(--text2); }
+    .rw-t-req { font-family:var(--font-m); font-size:8px; color:var(--text3); margin-left:auto; }
+    .rw-link-row { display:flex; gap:7px; }
+    .rw-link { flex:1; padding:9px 11px; background:var(--surface3); border:1px solid var(--border2); border-radius:7px; color:var(--text3); font-family:var(--font-m); font-size:9px; }
+    .rw-copy { padding:9px 15px; background:var(--gold); border:none; border-radius:7px; color:var(--bg); font-family:var(--font-m); font-size:9px; cursor:pointer; transition:all 0.12s; white-space:nowrap; }
+    .rw-copy:hover { background:var(--gold3); }
+    .share-row { display:flex; gap:7px; justify-content:center; }
+    .sh-btn { padding:9px 15px; border:1px solid var(--border2); background:transparent; border-radius:7px; color:var(--text2); font-family:var(--font-m); font-size:9px; cursor:pointer; transition:all 0.12s; }
+    .sh-btn:hover { border-color:var(--gold2); color:var(--gold); }
+
+    /* ── FOOTER ── */
+    .footer { border-top:1px solid var(--border); padding:30px 44px; display:flex; align-items:center; justify-content:space-between; color:var(--text3); font-size:12px; }
+    .fl-links { display:flex; gap:26px; }
+    .fl-a { color:var(--text3); text-decoration:none; transition:color 0.15s; }
+    .fl-a:hover { color:var(--gold); }
+
+    /* ── TOAST ── */
+    .toast-c { position:fixed; bottom:20px; right:20px; z-index:9999; display:flex; flex-direction:column; gap:7px; pointer-events:none; }
+    .toast { background:var(--surface3); border:1px solid var(--border2); border-left:3px solid var(--green); border-radius:8px; padding:10px 13px; display:flex; align-items:flex-start; gap:8px; min-width:230px; max-width:310px; box-shadow:0 6px 20px rgba(0,0,0,0.55); pointer-events:all; animation:tin 0.3s cubic-bezier(0.22,1,0.36,1) both; }
+    .toast.leave { animation:tout 0.25s ease forwards; }
+    .toast.info { border-left-color:var(--blue); } .toast.warn { border-left-color:var(--amber); }
+    @keyframes tin  { from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none} }
+    @keyframes tout { from{opacity:1}to{opacity:0;transform:translateX(12px)} }
+    .t-i { font-size:12px; } .t-tt { font-size:11px; font-weight:600; } .t-m { font-size:10px; color:var(--text2); margin-top:1px; }
+
+    ::-webkit-scrollbar { width:3px; } ::-webkit-scrollbar-thumb { background:var(--border2); border-radius:2px; }
+
+    @media (max-width:980px) {
+      .hero { grid-template-columns:1fr; }
+      .card { position:static; }
+      .hero-right { order:-1; }
+      .manifesto { grid-template-columns:1fr; padding:32px 28px; }
+      .pillars { grid-template-columns:1fr 1fr; }
+      .infra-map { grid-template-columns:1fr 1fr; }
+      .perf-block { grid-template-columns:1fr; text-align:center; }
+      .pb-body { max-width:100%; }
+      .pb-cta { align-items:center; }
+    }
+    @media (max-width:640px) {
+      .hero-title { font-size:48px; }
+      .nav { padding:14px 20px; }
+      .nav-links { display:none; }
+      .outcomes { grid-template-columns:1fr 1fr; }
+      .pillars { grid-template-columns:1fr; }
+      .tc-grid { grid-template-columns:1fr; }
+      .infra-map { grid-template-columns:1fr; }
+      .faq-grid { grid-template-columns:1fr; }
+      .footer { flex-direction:column; gap:12px; text-align:center; }
+      .s-unlocked { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="amb" aria-hidden="true">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="grid"></div>
+</div>
+
+<!-- NAVBAR -->
+<nav class="nav" aria-label="Main navigation">
+  <div class="logo">
+    <div class="logo-mark">S</div>
+    <div class="logo-name">Soldiro<em>AI</em></div>
+  </div>
+  <div class="nav-links">
+    <a href="#" class="nav-a">Platform</a>
+    <a href="#" class="nav-a">Pricing</a>
+    <a href="#" class="nav-a on">Infrastructure Partners</a>
+    <a href="#" class="nav-a">Contact</a>
+  </div>
+  <div style="display:flex;align-items:center;gap:14px">
+    <div class="nav-signal">
+      <div class="pulse" aria-hidden="true"></div>
+      <span id="navSignal">6 founding infrastructure slots remaining</span>
+    </div>
+    <button class="nav-cta" onclick="scrollToForm()">Reserve Slot</button>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- ══ HERO ══ -->
+  <div class="hero">
+    <div class="hero-left">
+
+      <div class="tag">
+        <div class="tag-blink" aria-hidden="true"></div>
+        Now accepting Infrastructure Partners · Q2 2026
+      </div>
+
+      <h1 class="hero-title">
+        The Revenue<br>
+        <span class="accent">Operating System</span><br>
+        <span class="dim">for Elite Teams.</span>
+      </h1>
+
+      <div class="hero-divider" aria-hidden="true"></div>
+
+      <p class="hero-lede">
+        Most companies buy tools.<br>
+        <strong>The best companies build systems.</strong>
+      </p>
+      <p class="hero-lede" style="margin-bottom:18px">
+        Soldiro deploys autonomous revenue infrastructure that generates qualified pipeline, advances every deal with AI intelligence, and scales your revenue org without scaling headcount.
+      </p>
+
+      <div class="not-tool" role="note">
+        <span style="font-size:22px">🚫</span>
+        <div class="not-tool-text">
+          <strong>Soldiro AI is not an SDR tool.</strong><br>
+          It's infrastructure. Infrastructure that aligns performance to outcomes — not activity.
+        </div>
+      </div>
+
+      <!-- OUTCOMES -->
+      <div class="outcomes" role="group" aria-label="Platform outcomes">
+        <div class="oc">
+          <div class="oc-val">4×</div>
+          <div class="oc-label">More qualified opportunities</div>
+          <div class="oc-sub">vs. unassisted outbound</div>
+        </div>
+        <div class="oc">
+          <div class="oc-val">&lt;48h</div>
+          <div class="oc-label">First buyer meeting booked</div>
+          <div class="oc-sub">from infrastructure deploy</div>
+        </div>
+        <div class="oc">
+          <div class="oc-val">112%</div>
+          <div class="oc-label">Average net revenue retention</div>
+          <div class="oc-sub">enterprise clients, YoY</div>
+        </div>
+        <div class="oc">
+          <div class="oc-val">200+</div>
+          <div class="oc-label">Revenue orgs deployed</div>
+          <div class="oc-sub">across SaaS, agencies, enterprise</div>
+        </div>
+      </div>
+
+      <!-- INFRASTRUCTURE MODULES -->
+      <div style="font-family:var(--font-m);font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:9px">Infrastructure modules (11 at launch)</div>
+      <div class="infra-strip" role="list" aria-label="Infrastructure modules">
+        <span class="infra-pill core" role="listitem">📊 Analytics</span>
+        <span class="infra-pill core" role="listitem">📥 BANT Hub</span>
+        <span class="infra-pill core" role="listitem">🎯 Campaign Engine</span>
+        <span class="infra-pill core" role="listitem">📱 Mobile</span>
+        <span class="infra-pill pro" role="listitem">🗺 Account Planning</span>
+        <span class="infra-pill pro" role="listitem">⚡ Deal Room</span>
+        <span class="infra-pill pro" role="listitem">📚 Playbook Studio</span>
+        <span class="infra-pill ent" role="listitem">🤝 Partner Portal</span>
+        <span class="infra-pill ent" role="listitem">📈 Client Health</span>
+        <span class="infra-pill ent" role="listitem">⚙️ Settings Hub</span>
+        <span class="infra-pill ent" role="listitem">🔖 White-Label</span>
+      </div>
+
+      <!-- LIVE FEED -->
+      <div class="feed-wrap" role="log" aria-live="polite" aria-label="Live partner signups">
+        <div class="feed-hd"><div class="pulse" aria-hidden="true"></div>Live infrastructure partner signups</div>
+        <div id="feedItems"></div>
+      </div>
+
+      <!-- URGENCY -->
+      <div class="urgency" aria-label="Founding partner slots">
+        <div class="urg-top">
+          <span class="urg-label">⚡ Founding infrastructure slots</span>
+          <span class="urg-count" id="spotsLeft" aria-live="polite">6 remaining</span>
+        </div>
+        <div class="urg-track" role="progressbar" aria-valuenow="88" aria-valuemin="0" aria-valuemax="100">
+          <div class="urg-fill" id="urgFill" style="width:88%"></div>
+        </div>
+        <div class="urg-meta"><span>0</span><span id="spotsText">44 of 50 claimed</span><span>50 slots</span></div>
+      </div>
+
+      <!-- TIER STACK -->
+      <div class="tier-stack" role="group" aria-label="Access tiers">
+        <div class="tier-hd">Partner access tiers</div>
+        <div class="tier live">
+          <div class="tier-ic">🥇</div>
+          <div class="tier-body">
+            <div class="tier-name">Founding Infrastructure Partner</div>
+            <div class="tier-desc">Lifetime 20% pricing · White-glove deploy · Founding council seat · Performance pricing option</div>
+          </div>
+          <div class="tier-badge" style="color:var(--gold);border-color:var(--goldring);background:var(--goldfade)">Slots 1–50</div>
+        </div>
+        <div class="tier">
+          <div class="tier-ic">🥈</div>
+          <div class="tier-body">
+            <div class="tier-name">Early Adopter</div>
+            <div class="tier-desc">10% off first year · Beta access · Feature vote rights</div>
+          </div>
+          <div class="tier-badge" style="color:var(--blue);border-color:rgba(74,143,255,0.3);background:var(--bluefade)">Slots 51–200</div>
+        </div>
+        <div class="tier dim">
+          <div class="tier-ic">🥉</div>
+          <div class="tier-body">
+            <div class="tier-name">Standard Access</div>
+            <div class="tier-desc">Standard pricing · Q3 2026 access</div>
+          </div>
+          <div class="tier-badge" style="color:var(--text3);border-color:var(--border2)">201+</div>
+        </div>
+      </div>
+
+    </div><!-- /hero-left -->
+
+    <!-- SIGNUP CARD -->
+    <div class="hero-right">
+      <div class="card" id="signupCard">
+        <div class="card-title">Reserve your infrastructure slot</div>
+        <div class="card-sub">Founding partner pricing is locked at signup — permanently</div>
+
+        <div class="wl-counter">
+          <div class="wl-num" id="wlCount">47</div>
+          <div class="wl-txt">revenue orgs on the list.<br><strong id="spotsRemText">6 founding slots left</strong> — lifetime discount.</div>
+        </div>
+
+        <!-- TIMER -->
+        <div class="timer" role="timer" aria-label="Time until early access closes">
+          <div class="t-unit"><div class="t-num" id="tDays">14</div><div class="t-lbl">Days</div></div>
+          <span class="t-sep">:</span>
+          <div class="t-unit"><div class="t-num" id="tHours">09</div><div class="t-lbl">Hrs</div></div>
+          <span class="t-sep">:</span>
+          <div class="t-unit"><div class="t-num" id="tMins">00</div><div class="t-lbl">Min</div></div>
+          <span class="t-sep">:</span>
+          <div class="t-unit"><div class="t-num" id="tSecs">00</div><div class="t-lbl">Sec</div></div>
+        </div>
+
+        <div class="fg">
+          <label class="fl" for="fName">Full Name *</label>
+          <input type="text" class="fi" id="fName" placeholder="Alex Chen" autocomplete="name">
+        </div>
+        <div class="fr">
+          <div class="fg">
+            <label class="fl" for="fEmail">Work Email *</label>
+            <input type="email" class="fi" id="fEmail" placeholder="alex@company.com">
+          </div>
+          <div class="fg">
+            <label class="fl" for="fCompany">Company *</label>
+            <input type="text" class="fi" id="fCompany" placeholder="Acme Corp">
+          </div>
+        </div>
+        <div class="fr">
+          <div class="fg">
+            <label class="fl" for="fRole">Your Role</label>
+            <input type="text" class="fi" id="fRole" placeholder="CRO / VP Sales / Founder">
+          </div>
+          <div class="fg">
+            <label class="fl" for="fTeam">Revenue Team Size</label>
+            <select class="fs" id="fTeam">
+              <option value="" disabled selected>Select…</option>
+              <option>1–5</option><option>6–15</option><option>16–50</option><option>51–200</option><option>201+</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="icp-lbl">Your profile</div>
+        <div class="icp-grid" role="group" aria-label="Select your profile">
+          <div class="icp-btn" onclick="selICP(this,'founder')"><span class="icp-ic">🚀</span>Founder / CEO</div>
+          <div class="icp-btn" onclick="selICP(this,'cro')"><span class="icp-ic">🏆</span>CRO / VP Sales</div>
+          <div class="icp-btn" onclick="selICP(this,'revops')"><span class="icp-ic">⚙️</span>RevOps</div>
+          <div class="icp-btn" onclick="selICP(this,'ae')"><span class="icp-ic">📞</span>AE / SDR</div>
+          <div class="icp-btn" onclick="selICP(this,'agency')"><span class="icp-ic">🤝</span>Agency</div>
+          <div class="icp-btn" onclick="selICP(this,'other')"><span class="icp-ic">💼</span>Other</div>
+        </div>
+
+        <div class="fg">
+          <label class="fl" for="fRef">Referral code <span style="color:var(--green)">(move up 10 slots)</span></label>
+          <div class="ref-row">
+            <input type="text" class="ref-fi" id="fRef" placeholder="e.g. SOLDIRO-ABC123">
+          </div>
+        </div>
+
+        <div class="ck-row">
+          <div class="ck" id="ckTerms" onclick="toggleCk()" role="checkbox" aria-checked="false" tabindex="0" onkeydown="if(event.key===' '){event.preventDefault();toggleCk()}">
+            <span class="ck-mk">✓</span>
+          </div>
+          <div class="ck-lbl">I agree to the <a href="#">Terms</a> and <a href="#">Privacy Policy</a></div>
+        </div>
+
+        <button class="cta-btn" id="submitBtn" onclick="submit()">
+          Claim Your Infrastructure Slot →
+        </button>
+        <div class="card-foot">🔒 No credit card required · Founding pricing locked forever · Unsubscribe anytime</div>
+      </div>
+    </div>
+
+  </div><!-- /hero -->
+
+  <!-- ══ BODY ══ -->
+  <div class="body">
+
+    <!-- MANIFESTO -->
+    <div class="manifesto">
+      <div>
+        <div class="mf-label">The category distinction</div>
+        <h2 class="mf-title">Not a tool.<br><span>Infrastructure.</span></h2>
+        <p class="mf-body">Tools require human operators. Tools go idle on weekends. Tools produce activity reports that don't correlate to revenue.<br><br>Infrastructure runs autonomously. Infrastructure compounds. Infrastructure aligns performance to outcomes — not the hours your team logs.<br><br>Soldiro deploys across your entire revenue motion: from first outbound signal to closed deal to client health monitoring. One system. One source of truth.</p>
+      </div>
+      <div class="mf-right">
+        <div class="mf-point">
+          <div class="mf-ic">🧠</div>
+          <div>
+            <div class="mf-point-title">Autonomous pipeline generation</div>
+            <div class="mf-point-desc">Continuous outbound research, personalized sequencing, and BANT qualification — running 24/7 without human orchestration.</div>
+          </div>
+        </div>
+        <div class="mf-point">
+          <div class="mf-ic">⚡</div>
+          <div>
+            <div class="mf-point-title">AI-guided deal advancement</div>
+            <div class="mf-point-desc">Deal Room intelligence surfaces competitive risks, tracks champion engagement, and nudges next-best-actions before deals go cold.</div>
+          </div>
+        </div>
+        <div class="mf-point">
+          <div class="mf-ic">📈</div>
+          <div>
+            <div class="mf-point-title">Revenue health forecasting</div>
+            <div class="mf-point-desc">Client Health monitors engagement, predicts expansion signals, and flags churn risk weeks before your CS team would catch it.</div>
+          </div>
+        </div>
+        <div class="mf-point">
+          <div class="mf-ic">🔗</div>
+          <div>
+            <div class="mf-point-title">Performance-aligned pricing</div>
+            <div class="mf-point-desc">We deploy infrastructure. Then we align fees to outcomes — not activity. Founding partners can unlock performance pricing at launch.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OUTCOME PILLARS -->
+    <div class="sec-hd">
+      <div class="sec-ey">What infrastructure delivers</div>
+      <h2 class="sec-title">Strategic <span>revenue outcomes</span></h2>
+      <p class="sec-sub">Not reply rate benchmarks. Not activity dashboards. Outcomes your board cares about.</p>
+    </div>
+    <div class="pillars" role="list">
+      <div class="pillar" role="listitem">
+        <div class="pillar-num" aria-hidden="true">01</div>
+        <div class="pillar-ic">🎯</div>
+        <div class="pillar-title">Predictable qualified pipeline</div>
+        <div class="pillar-body">Every buyer entering your pipeline is BANT-scored by Claude. Budget confirmed. Authority mapped. Need validated. Timeline established. You speak only with buyers who are ready to engage.</div>
+        <div class="pillar-outcome">4×</div>
+        <div class="pillar-outcome-lbl">more qualified opportunities vs. unassisted outbound</div>
+      </div>
+      <div class="pillar" role="listitem">
+        <div class="pillar-num" aria-hidden="true">02</div>
+        <div class="pillar-ic">⚡</div>
+        <div class="pillar-title">Faster, higher-value closes</div>
+        <div class="pillar-body">Deal Room AI tracks every stakeholder, surfaces competitive intel in real time, and suggests next actions before deals stall. Enterprise deals close faster when the right signals are always visible.</div>
+        <div class="pillar-outcome">$250k+</div>
+        <div class="pillar-outcome-lbl">enterprise deals closed using Deal Room intelligence</div>
+      </div>
+      <div class="pillar" role="listitem">
+        <div class="pillar-num" aria-hidden="true">03</div>
+        <div class="pillar-ic">📈</div>
+        <div class="pillar-title">Compounding net revenue retention</div>
+        <div class="pillar-body">Client Health Dashboard monitors engagement signals, predicts churn before it happens, and identifies expansion-ready accounts. Revenue grows without adding headcount to your CS function.</div>
+        <div class="pillar-outcome">112%</div>
+        <div class="pillar-outcome-lbl">average NRR for enterprise clients running Client Health</div>
+      </div>
+    </div>
+
+    <!-- TESTIMONIALS -->
+    <div class="sec-hd">
+      <div class="sec-ey">Infrastructure partners</div>
+      <h2 class="sec-title">Revenue outcomes, <span>not tool reviews</span></h2>
+    </div>
+    <div class="tc-grid">
+      <div class="tc">
+        <div class="qm" aria-hidden="true">"</div>
+        <div class="tc-stars">★★★★★</div>
+        <div class="tc-quote">"We converted pipeline into seven qualified opportunities in the first seven days. The BANT qualification is the key — every call is with someone who has actual budget authority and a real timeline. SDR headcount is frozen indefinitely."</div>
+        <div class="tc-author">
+          <div class="tc-av" style="background:#2ecc8a;color:#000">JD</div>
+          <div>
+            <div class="tc-name">James Donovan</div>
+            <div class="tc-role">Founder · B2B SaaS · Infrastructure Partner #12</div>
+          </div>
+        </div>
+        <div class="tc-result" style="background:var(--greenfade);border:1px solid rgba(46,204,138,0.2);color:var(--green)">
+          7 qualified opportunities · Week 1 · Headcount frozen
+        </div>
+      </div>
+      <div class="tc">
+        <div class="qm" aria-hidden="true">"</div>
+        <div class="tc-stars">★★★★★</div>
+        <div class="tc-quote">"Deal Room changed how we close enterprise. Champion tracking, competitive risk flagging, AI-guided next actions — it's like having a senior AE coaching every deal in real time. We closed a $250k contract in 45 days with four stakeholders."</div>
+        <div class="tc-author">
+          <div class="tc-av" style="background:#9b6dff;color:#fff">SC</div>
+          <div>
+            <div class="tc-name">Sarah Chen</div>
+            <div class="tc-role">VP Sales · Series B · Infrastructure Partner #3</div>
+          </div>
+        </div>
+        <div class="tc-result" style="background:var(--purpfade);border:1px solid rgba(155,109,255,0.2);color:var(--purple)">
+          $250k closed · 45 days · 4-stakeholder enterprise deal
+        </div>
+      </div>
+      <div class="tc">
+        <div class="qm" aria-hidden="true">"</div>
+        <div class="tc-stars">★★★★★</div>
+        <div class="tc-quote">"As an agency, the Partner Portal is the unlock. I white-label Soldiro's infrastructure for eight enterprise clients — each with their own deal rooms, playbooks, and health dashboards. Client NRR is at 112%. This is a business model, not a software subscription."</div>
+        <div class="tc-author">
+          <div class="tc-av" style="background:#e8b84b;color:#000">ZM</div>
+          <div>
+            <div class="tc-name">Zeta Marketing Agency</div>
+            <div class="tc-role">Agency partner · 8 enterprise clients · Partner tier</div>
+          </div>
+        </div>
+        <div class="tc-result" style="background:var(--goldfade);border:1px solid var(--goldring);color:var(--gold2)">
+          8 clients · 112% average client NRR · Partner revenue share
+        </div>
+      </div>
+      <div class="tc">
+        <div class="qm" aria-hidden="true">"</div>
+        <div class="tc-stars">★★★★★</div>
+        <div class="tc-quote">"We ran Outreach and Clay simultaneously for two years. Soldiro's infrastructure replaced both and added capabilities neither had. The revenue forecasting layer alone surfaced two at-risk accounts that would have churned. The ROI conversation is not even close."</div>
+        <div class="tc-author">
+          <div class="tc-av" style="background:#4a8fff;color:#fff">KV</div>
+          <div>
+            <div class="tc-name">Karri V.</div>
+            <div class="tc-role">CRO · DevTools · Infrastructure Partner #7</div>
+          </div>
+        </div>
+        <div class="tc-result" style="background:var(--bluefade);border:1px solid rgba(74,143,255,0.2);color:var(--blue)">
+          Replaced Outreach + Clay · 2 churn events prevented · Full revenue OS
+        </div>
+      </div>
+    </div>
+
+    <!-- INFRASTRUCTURE MAP -->
+    <div class="sec-hd">
+      <div class="sec-ey">Infrastructure modules</div>
+      <h2 class="sec-title">11 modules. <span>One revenue OS.</span></h2>
+      <p class="sec-sub">Deployed together, they form a closed-loop revenue system. Used selectively, each module is still the best in class for its function.</p>
+    </div>
+    <div class="infra-map" role="list">
+      <div class="im" role="listitem"><div class="im-ic">📊</div><div class="im-name">Analytics Engine</div><div class="im-desc">Real-time pipeline intelligence, revenue forecasting, and AI performance benchmarks.</div><span class="im-tier" style="color:var(--green);border-color:rgba(46,204,138,0.3);background:var(--greenfade)">Core</span></div>
+      <div class="im" role="listitem"><div class="im-ic">📥</div><div class="im-name">BANT Intelligence Hub</div><div class="im-desc">Autonomous buyer qualification. Every reply scored across all four BANT dimensions.</div><span class="im-tier" style="color:var(--green);border-color:rgba(46,204,138,0.3);background:var(--greenfade)">Core</span></div>
+      <div class="im" role="listitem"><div class="im-ic">🎯</div><div class="im-name">Campaign Engine</div><div class="im-desc">Multi-channel sequences with dynamic personalization and autonomous A/B optimization.</div><span class="im-tier" style="color:var(--green);border-color:rgba(46,204,138,0.3);background:var(--greenfade)">Core</span></div>
+      <div class="im" role="listitem"><div class="im-ic">📱</div><div class="im-name">Mobile Command</div><div class="im-desc">Full revenue OS access on mobile. Review pipeline, approve sequences, action signals.</div><span class="im-tier" style="color:var(--green);border-color:rgba(46,204,138,0.3);background:var(--greenfade)">Core</span></div>
+      <div class="im" role="listitem"><div class="im-ic">🗺</div><div class="im-name">Account Planning Center</div><div class="im-desc">Org mapping, buying committee intelligence, and ABM execution at enterprise scale.</div><span class="im-tier" style="color:var(--gold2);border-color:var(--goldring);background:var(--goldfade)">Pro</span></div>
+      <div class="im" role="listitem"><div class="im-ic">⚡</div><div class="im-name">Deal Room</div><div class="im-desc">AI deal coaching. Champion tracking. Competitive intel. Real-time next-best-action.</div><span class="im-tier" style="color:var(--gold2);border-color:var(--goldring);background:var(--goldfade)">Pro</span></div>
+      <div class="im" role="listitem"><div class="im-ic">📚</div><div class="im-name">Playbook Studio</div><div class="im-desc">Build, test, and continuously optimize revenue playbooks from what actually works.</div><span class="im-tier" style="color:var(--gold2);border-color:var(--goldring);background:var(--goldfade)">Pro</span></div>
+      <div class="im" role="listitem"><div class="im-ic">🤝</div><div class="im-name">Partner Portal</div><div class="im-desc">White-label the full infrastructure. Manage multi-client deployments. Revenue sharing.</div><span class="im-tier" style="color:var(--purple);border-color:rgba(155,109,255,0.3);background:var(--purpfade)">Enterprise</span></div>
+      <div class="im" role="listitem"><div class="im-ic">📈</div><div class="im-name">Client Health OS</div><div class="im-desc">Predict churn. Surface expansion signals. Scale customer success without headcount.</div><span class="im-tier" style="color:var(--purple);border-color:rgba(155,109,255,0.3);background:var(--purpfade)">Enterprise</span></div>
+      <div class="im" role="listitem"><div class="im-ic">⚙️</div><div class="im-name">Settings &amp; Integrations</div><div class="im-desc">Clay, Apollo, HubSpot, Salesforce, Slack, Cal.com and 20+ native connectors.</div><span class="im-tier" style="color:var(--purple);border-color:rgba(155,109,255,0.3);background:var(--purpfade)">Enterprise</span></div>
+      <div class="im" role="listitem"><div class="im-ic">🔖</div><div class="im-name">White-Label Layer</div><div class="im-desc">Fully branded infrastructure for agencies and resellers. Custom domain, custom UI.</div><span class="im-tier" style="color:var(--purple);border-color:rgba(155,109,255,0.3);background:var(--purpfade)">Enterprise</span></div>
+    </div>
+
+    <!-- PERFORMANCE ALIGNMENT CALLOUT -->
+    <div class="perf-block">
+      <div>
+        <div class="pb-label">Performance-aligned pricing</div>
+        <h2 class="pb-title">We deploy infrastructure.<br>Then we <span>align fees to outcomes.</span></h2>
+        <p class="pb-body">Soldiro's founding partners have the option to move to performance-aligned pricing at launch — where a portion of fees are tied to revenue outcomes, not software seats. We don't charge for activity. We charge for results.<br><br>This model is available exclusively to Founding Infrastructure Partners. It won't be offered at standard launch pricing.</p>
+      </div>
+      <div class="pb-cta">
+        <button class="pb-btn" onclick="scrollToForm()">Reserve Your Slot →</button>
+        <div class="pb-note">Only 6 founding slots remain<br>Performance pricing available to founding partners only</div>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="faq-wrap">
+      <div class="sec-hd">
+        <div class="sec-ey">Common questions</div>
+        <h2 class="sec-title">What you need <span>to know</span></h2>
+      </div>
+      <div class="faq-grid" id="faqGrid">
+        <div class="faq" onclick="togFAQ(this)"><div class="faq-q">When does infrastructure access open? <span class="faq-arr">▾</span></div><div class="faq-a">The first 50 founding partners get access in 2 weeks (Q2 2026 soft launch). Full public launch follows in Q3. Founding partners join our private Slack and co-shape the roadmap with our team before general availability.</div></div>
+        <div class="faq" onclick="togFAQ(this)"><div class="faq-q">What is founding partner pricing? <span class="faq-arr">▾</span></div><div class="faq-a">Core infrastructure starts at $2,500/mo and Pro at $5,000/mo. Founding partners (first 50) lock in 20% off for life — $2,000/mo and $4,000/mo. This discount never expires. Founding partners also have access to performance-aligned pricing options at launch.</div></div>
+        <div class="faq" onclick="togFAQ(this)"><div class="faq-q">What does deployment actually involve? <span class="faq-arr">▾</span></div><div class="faq-a">Zero technical lift from your team. We configure all integrations, map your ICP, set up your campaign infrastructure, and train your team. Founding partners receive white-glove onboarding with a dedicated implementation manager. Most go live within 5 business days.</div></div>
+        <div class="faq" onclick="togFAQ(this)"><div class="faq-q">What is performance-aligned pricing? <span class="faq-arr">▾</span></div><div class="faq-a">Founding partners can elect to move a portion of their monthly fees to outcome-based pricing at launch — tied to revenue generated, qualified pipeline created, or meetings booked. This model aligns our incentives completely with your revenue outcomes. Details are finalized during onboarding.</div></div>
+        <div class="faq" onclick="togFAQ(this)"><div class="faq-q">Which integrations are live at launch? <span class="faq-arr">▾</span></div><div class="faq-a">Clay, Apollo, Hunter, Instantly, Airtable, Cal.com, Gmail, Outlook, Slack, and HubSpot at launch. Salesforce, Pipedrive, and custom CRM connections follow in Q3 2026. Founding partners vote on integration priority.</div></div>
+        <div class="faq" onclick="togFAQ(this)"><div class="faq-q">Is there a guarantee? <span class="faq-arr">▾</span></div><div class="faq-a">30-day money-back guarantee on your first payment. No conditions, no questions. We are confident you'll see qualified pipeline within the first week. Most partners book their first buyer meeting within 48 hours of going live.</div></div>
+      </div>
+    </div>
+
+  </div><!-- /body -->
+
+  <footer class="footer">
+    <div>© 2026 Soldiro AI — Revenue Operating System</div>
+    <div class="fl-links">
+      <a href="#" class="fl-a">Privacy</a>
+      <a href="#" class="fl-a">Terms</a>
+      <a href="#" class="fl-a">Security</a>
+      <a href="#" class="fl-a">Contact</a>
+    </div>
+  </footer>
+
+</div><!-- /page -->
+
+<!-- ══ SUCCESS OVERLAY ══ -->
+<div class="success-ov" id="successOv" role="dialog" aria-modal="true" aria-labelledby="sTitle">
+  <div class="success-modal">
+    <div class="s-ring" aria-hidden="true">🎉</div>
+    <h2 class="s-title" id="sTitle">You're <span>in.</span></h2>
+    <p class="s-sub">Your founding infrastructure slot is secured. Check your email for confirmation and your referral link. Welcome to the revenue OS era.</p>
+    <div class="pos-badge" role="status" aria-live="polite">
+      <div class="pos-num" id="posNum">#48</div>
+      <div class="pos-lbl">on the list<br><span style="color:var(--gold);font-family:var(--font-m);font-size:9px">Founding Partner · 20% off for life</span></div>
+    </div>
+    <div class="s-unlocked" role="list" aria-label="Partner benefits unlocked">
+      <div class="s-ul" role="listitem"><span class="s-ul-ic">🏷</span>20% lifetime pricing — locked forever</div>
+      <div class="s-ul" role="listitem"><span class="s-ul-ic">⚡</span>Priority access in 2 weeks</div>
+      <div class="s-ul" role="listitem"><span class="s-ul-ic">🎁</span>White-glove deploy ($2,500 value)</div>
+      <div class="s-ul" role="listitem"><span class="s-ul-ic">💬</span>Founding Partner Slack council</div>
+    </div>
+    <div class="ref-widget">
+      <div class="rw-title">📣 Move up the list</div>
+      <div class="rw-sub">Refer revenue orgs and unlock bonuses. Each referral moves you up 10 slots.</div>
+      <div class="rw-tiers">
+        <div class="rw-t">👥 Refer 1 — <strong>skip 10 positions</strong><span class="rw-t-req">0/1</span></div>
+        <div class="rw-t">🎁 Refer 3 — <strong>free deployment ($2,500)</strong><span class="rw-t-req">0/3</span></div>
+        <div class="rw-t">🏆 Refer 5 — <strong>1 month free access</strong><span class="rw-t-req">0/5</span></div>
+      </div>
+      <div class="rw-link-row">
+        <input type="text" class="rw-link" id="refLink" value="soldiro.ai/partners?ref=SOLDIRO-ABC123" readonly aria-label="Your referral link">
+        <button class="rw-copy" onclick="copyRef()">Copy Link</button>
+      </div>
+    </div>
+    <div class="share-row">
+      <button class="sh-btn" onclick="doShare('x')">𝕏 Share on X</button>
+      <button class="sh-btn" onclick="doShare('li')">in LinkedIn</button>
+      <button class="sh-btn" onclick="doShare('email')">✉ Email</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-c" id="toastC" role="status" aria-live="polite" aria-atomic="false"></div>
+
+<script>
+/* ════════════════════════════════════
+   STATE
+════════════════════════════════════ */
+let wlCount    = 47;
+let spotsTaken = 44;
+const TOTAL    = 50;
+let termsOn    = false;
+let selectedICP = '';
+let userPos    = 0;
+
+/* ════════════════════════════════════
+   COUNTDOWN — reset from NOW + 14 days
+════════════════════════════════════ */
+const launchDate = (() => {
+  const d = new Date();
+  d.setDate(d.getDate() + 14);
+  d.setHours(9, 0, 0, 0);
+  return d;
+})();
+
+function tick() {
+  const diff = launchDate - Date.now();
+  if (diff <= 0) {
+    ['tDays','tHours','tMins','tSecs'].forEach(id => document.getElementById(id).textContent = '00');
+    return;
+  }
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+  document.getElementById('tDays').textContent  = String(d).padStart(2,'0');
+  document.getElementById('tHours').textContent = String(h).padStart(2,'0');
+  document.getElementById('tMins').textContent  = String(m).padStart(2,'0');
+  document.getElementById('tSecs').textContent  = String(s).padStart(2,'0');
+}
+setInterval(tick, 1000);
+tick();
+
+/* ════════════════════════════════════
+   LIVE FEED
+════════════════════════════════════ */
+const FEED = [
+  { av:'JO', bg:'#2ecc8a', c:'#000', name:'James O.', co:'Vercel', role:'Founder' },
+  { av:'SC', bg:'#9b6dff', c:'#fff', name:'Sarah C.', co:'Stripe', role:'VP Sales' },
+  { av:'KV', bg:'#4a8fff', c:'#fff', name:'Karri V.', co:'Linear', role:'CRO' },
+  { av:'AL', bg:'#e8b84b', c:'#000', name:'Alex L.', co:'Figma', role:'RevOps' },
+  { av:'PR', bg:'#e84b6a', c:'#fff', name:'Parker R.', co:'Rippling', role:'Founder' },
+  { av:'GM', bg:'#2eccd5', c:'#000', name:'Guillermo M.', co:'Netlify', role:'Agency' },
+];
+let feedIdx = 0;
+
+function buildFeedItem(f, timeStr) {
+  return `<div class="feed-item">
+    <div class="f-av" style="background:${f.bg};color:${f.c}" aria-hidden="true">${f.av}</div>
+    <span><span class="f-name">${f.name}</span> from ${f.co} reserved a slot</span>
+    <span class="f-time">${timeStr}</span>
+  </div>`;
+}
+
+function renderFeed() {
+  const times = ['2m ago','5m ago','11m ago'];
+  document.getElementById('feedItems').innerHTML = FEED.slice(0,3).map((f,i) => buildFeedItem(f, times[i])).join('');
+}
+renderFeed();
+
+setInterval(() => {
+  feedIdx = (feedIdx + 1) % FEED.length;
+  const el = document.createElement('div');
+  el.innerHTML = buildFeedItem(FEED[feedIdx], 'just now');
+  const container = document.getElementById('feedItems');
+  const items = container.querySelectorAll('.feed-item');
+  if (items.length >= 3) items[items.length-1].remove();
+  container.insertBefore(el.firstElementChild, container.firstChild);
+}, 9000);
+
+/* ════════════════════════════════════
+   URGENCY
+════════════════════════════════════ */
+function updateUrgency() {
+  const rem = TOTAL - spotsTaken;
+  const pct = (spotsTaken / TOTAL) * 100;
+  document.getElementById('spotsLeft').textContent    = rem + ' remaining';
+  document.getElementById('spotsText').textContent    = spotsTaken + ' of ' + TOTAL + ' claimed';
+  document.getElementById('navSignal').textContent    = rem + ' founding infrastructure slots remaining';
+  document.getElementById('urgFill').style.width      = pct + '%';
+  document.getElementById('spotsRemText').textContent = rem + ' founding slots left';
+}
+updateUrgency();
+
+// Simulate organic signups
+setInterval(() => {
+  if (spotsTaken < TOTAL) {
+    spotsTaken++;
+    wlCount++;
+    document.getElementById('wlCount').textContent = wlCount;
+    updateUrgency();
+    if ((TOTAL - spotsTaken) <= 3) {
+      toast('🔥 Almost gone', 'Only ' + (TOTAL - spotsTaken) + ' founding partner slots remain', 'warn');
+    }
+  }
+}, 28000);
+
+/* ════════════════════════════════════
+   ICP
+════════════════════════════════════ */
+function selICP(btn, val) {
+  document.querySelectorAll('.icp-btn').forEach(b => b.classList.remove('sel'));
+  btn.classList.add('sel');
+  selectedICP = val;
+}
+
+/* ════════════════════════════════════
+   CHECKBOX
+════════════════════════════════════ */
+function toggleCk() {
+  const el = document.getElementById('ckTerms');
+  termsOn = !termsOn;
+  el.classList.toggle('on', termsOn);
+  el.setAttribute('aria-checked', String(termsOn));
+}
+
+/* ════════════════════════════════════
+   SCROLL
+════════════════════════════════════ */
+function scrollToForm() {
+  document.getElementById('signupCard').scrollIntoView({ behavior:'smooth', block:'start' });
+  setTimeout(() => document.getElementById('fName').focus(), 500);
+}
+
+/* ════════════════════════════════════
+   SUBMIT
+════════════════════════════════════ */
+async function submit() {
+  const name    = document.getElementById('fName').value.trim();
+  const email   = document.getElementById('fEmail').value.trim();
+  const company = document.getElementById('fCompany').value.trim();
+  let err = false;
+
+  ['fName','fEmail','fCompany'].forEach(id => document.getElementById(id).classList.remove('err'));
+
+  if (!name)                           { document.getElementById('fName').classList.add('err'); err = true; }
+  if (!email || !email.includes('@'))  { document.getElementById('fEmail').classList.add('err'); err = true; }
+  if (!company)                        { document.getElementById('fCompany').classList.add('err'); err = true; }
+  if (err)   { toast('Required fields', 'Please fill in name, email, and company', 'warn'); return; }
+  if (!termsOn) { toast('Terms required', 'Please agree to the terms and privacy policy', 'warn'); return; }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = 'Securing your slot…';
+
+  await new Promise(r => setTimeout(r, 1600));
+
+  wlCount++;
+  spotsTaken = Math.min(spotsTaken + 1, TOTAL);
+  userPos    = wlCount;
+
+  const refCode = 'SOLDIRO-' + Math.random().toString(36).slice(2,9).toUpperCase();
+  document.getElementById('wlCount').textContent = wlCount;
+  document.getElementById('posNum').textContent  = '#' + userPos;
+  document.getElementById('refLink').value       = 'soldiro.ai/partners?ref=' + refCode;
+  updateUrgency();
+
+  // Persist
+  try {
+    const entries = JSON.parse(localStorage.getItem('soldiro_wl') || '[]');
+    entries.push({ name, email, company, icp:selectedICP, pos:userPos, ref:refCode, ts:new Date().toISOString() });
+    localStorage.setItem('soldiro_wl', JSON.stringify(entries));
+  } catch(e) {}
+
+  document.getElementById('successOv').classList.add('show');
+  toast('🎉 Slot secured!', 'Founding Partner #' + userPos + ' — 20% off locked forever', 'success');
+
+  btn.disabled = false;
+  btn.textContent = 'Claim Your Infrastructure Slot →';
+}
+
+/* ════════════════════════════════════
+   SUCCESS ACTIONS
+════════════════════════════════════ */
+function copyRef() {
+  const val = document.getElementById('refLink').value;
+  try { navigator.clipboard.writeText('https://' + val); } catch(e) {}
+  toast('Link copied!', 'Share it to move up the list and unlock rewards', 'success');
+  const btn = document.querySelector('.rw-copy');
+  btn.textContent = '✓ Copied';
+  setTimeout(() => btn.textContent = 'Copy Link', 2500);
+}
+
+function doShare(platform) {
+  const link = document.getElementById('refLink').value;
+  const msg  = encodeURIComponent(`Just secured a founding slot on the Soldiro AI Revenue OS waitlist. It's infrastructure — not a tool. Autonomous pipeline, BANT qualification, Deal Room AI, 11 modules. Founding partner pricing locks in forever: https://${link}`);
+  if (platform === 'x')     { toast('Opening X…', 'Thanks for sharing!', 'info'); }
+  if (platform === 'li')    { toast('Opening LinkedIn…', 'Thanks for spreading the word!', 'info'); }
+  if (platform === 'email') {
+    const sub  = encodeURIComponent('You should see the Soldiro AI Revenue OS');
+    const body = encodeURIComponent(`Hey,\n\nI just reserved a founding partner slot on Soldiro AI — an autonomous Revenue Operating System (not just another outbound tool).\n\nIt deploys 11 infrastructure modules covering your full revenue motion: pipeline generation, BANT qualification, deal intelligence, client health forecasting. Founding partners get 20% off for life and access to performance-aligned pricing.\n\nFounding slots are almost gone: https://${link}`);
+    window.location.href = 'mailto:?subject=' + sub + '&body=' + body;
+  }
+}
+
+document.getElementById('successOv').addEventListener('click', e => {
+  if (e.target === e.currentTarget) e.currentTarget.classList.remove('show');
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.getElementById('successOv').classList.remove('show');
+});
+
+/* ════════════════════════════════════
+   FAQ
+════════════════════════════════════ */
+function togFAQ(el) {
+  const wasOpen = el.classList.contains('open');
+  document.querySelectorAll('.faq.open').forEach(f => f.classList.remove('open'));
+  if (!wasOpen) el.classList.add('open');
+}
+
+/* ════════════════════════════════════
+   TOAST
+════════════════════════════════════ */
+const ICONS = { success:'✅', info:'ℹ️', warn:'⚠️' };
+function toast(title, msg, type='success') {
+  const c = document.getElementById('toastC');
+  const t = document.createElement('div'); t.className = `toast ${type}`;
+  t.innerHTML = `<div class="t-i">${ICONS[type]||'●'}</div><div><div class="t-tt">${title}</div><div class="t-m">${msg}</div></div>`;
+  c.appendChild(t);
+  setTimeout(() => { t.classList.add('leave'); t.addEventListener('animationend', () => t.remove(), {once:true}); }, 4000);
+}
+</script>
+</body>
+</html>

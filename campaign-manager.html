@@ -1,0 +1,2288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Soldiro AI — Campaign Manager</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;800;900&family=Sora:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ══════════════════════════════════════
+       TOKENS
+    ══════════════════════════════════════ */
+    :root {
+      --bg:        #07070a;
+      --surface:   #0d0d16;
+      --surface2:  #111119;
+      --surface3:  #181825;
+      --border:    #1e1e2e;
+      --border2:   #2a2a3a;
+      --border3:   #3a3a52;
+      --gold:      #e8b84b;
+      --gold2:     #c49030;
+      --gold3:     #f5d07a;
+      --goldfade:  rgba(232,184,75,0.07);
+      --goldring:  rgba(232,184,75,0.18);
+      --red:       #e84b6a;
+      --green:     #2ecc8a;
+      --blue:      #4a8fff;
+      --purple:    #9b6dff;
+      --amber:     #ffb347;
+      --text:      #eae6f5;
+      --text2:     #a9a1c2;
+      --text3:     #6a6380;
+      --muted:     #43405c;
+      --font-d:    'Barlow Condensed', sans-serif;
+      --font-b:    'Sora', sans-serif;
+      --font-m:    'JetBrains Mono', monospace;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-b);
+      font-size: 14px;
+      line-height: 1.5;
+      overflow: hidden;
+    }
+
+    /* ══ SHELL ══ */
+    .shell {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      grid-template-rows: 56px 1fr;
+      height: 100vh;
+    }
+
+    /* ══ TOPNAV ══ */
+    .topnav {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      z-index: 20;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-s {
+      background: var(--gold);
+      color: var(--bg);
+      font-family: var(--font-d);
+      font-weight: 800;
+      font-size: 15px;
+      width: 28px; height: 28px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 5px;
+    }
+
+    .brand-name {
+      font-family: var(--font-d);
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-m);
+      font-size: 11px;
+      color: var(--text3);
+    }
+
+    .breadcrumb-sep { color: var(--muted); }
+    .breadcrumb-cur { color: var(--gold); }
+
+    .topnav-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-chip {
+      background: transparent;
+      border: 1px solid var(--border2);
+      color: var(--text2);
+      font-family: var(--font-m);
+      font-size: 10px;
+      letter-spacing: 1px;
+      padding: 5px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-transform: uppercase;
+    }
+
+    .nav-chip:hover { border-color: var(--gold2); color: var(--gold); }
+
+    .live-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: breathe 2s ease-in-out infinite;
+    }
+
+    @keyframes breathe {
+      0%,100% { box-shadow: 0 0 0 0 rgba(46,204,138,0.5); }
+      50%      { box-shadow: 0 0 0 5px rgba(46,204,138,0); }
+    }
+
+    /* ══ SIDEBAR ══ */
+    .sidebar {
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      padding: 24px 0;
+    }
+
+    .sidebar-section { margin-bottom: 4px; }
+
+    .sidebar-label {
+      font-family: var(--font-m);
+      font-size: 9px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--text3);
+      padding: 0 20px 8px;
+    }
+
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 8px 20px;
+      background: transparent;
+      border: none;
+      border-left: 3px solid transparent;
+      font-family: var(--font-b);
+      font-size: 12px;
+      color: var(--text2);
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s;
+    }
+
+    .sidebar-item:hover { background: var(--goldfade); color: var(--text); }
+    .sidebar-item.active { background: var(--goldfade); color: var(--gold); border-left-color: var(--gold); }
+    .sidebar-item:focus-visible { outline: 2px solid var(--gold2); outline-offset: -2px; }
+
+    .si-icon { font-size: 14px; width: 18px; text-align: center; flex-shrink: 0; }
+
+    .si-badge {
+      margin-left: auto;
+      font-family: var(--font-m);
+      font-size: 9px;
+      background: var(--goldfade);
+      border: 1px solid var(--goldring);
+      color: var(--gold2);
+      padding: 1px 6px;
+      border-radius: 8px;
+    }
+
+    .sidebar-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 12px 20px;
+    }
+
+    /* ══ MAIN ══ */
+    .main {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Tab bar */
+    .tab-bar {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      padding: 0 28px;
+      flex-shrink: 0;
+    }
+
+    .tab {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 14px 18px;
+      font-family: var(--font-m);
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      color: var(--text3);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      background: transparent;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+      transition: color 0.15s;
+      white-space: nowrap;
+    }
+
+    .tab:hover { color: var(--text2); }
+    .tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+    .tab:focus-visible { outline: 2px solid var(--gold2); outline-offset: -2px; }
+
+    .tab-num {
+      font-size: 9px;
+      background: var(--border2);
+      color: var(--text3);
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .tab.active .tab-num { background: var(--goldring); color: var(--gold); }
+    .tab.done .tab-num { background: rgba(46,204,138,0.15); color: var(--green); }
+    .tab.done { color: var(--text2); }
+
+    /* ══ CONTENT ══ */
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 32px 36px;
+    }
+
+    /* Section panels */
+    .panel { display: none; flex-direction: column; gap: 28px; }
+    .panel.active { display: flex; animation: fadeSlide 0.25s ease both; }
+
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ══ PANEL HEADER ══ */
+    .panel-header { margin-bottom: 4px; }
+
+    .panel-eyebrow {
+      font-family: var(--font-m);
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: var(--gold2);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .panel-title {
+      font-family: var(--font-d);
+      font-size: clamp(24px, 2.5vw, 34px);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: 0.3px;
+    }
+
+    .panel-title em { font-style: normal; color: var(--gold); }
+
+    .panel-sub {
+      font-size: 13px;
+      color: var(--text2);
+      margin-top: 8px;
+      max-width: 560px;
+      line-height: 1.6;
+    }
+
+    /* ══ CARDS ══ */
+    .card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      background: var(--surface3);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .card-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-d);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.3px;
+    }
+
+    .card-title-icon { font-size: 16px; }
+
+    .card-body { padding: 20px; }
+
+    /* ══ FORM ELEMENTS ══ */
+    .field { display: flex; flex-direction: column; gap: 6px; }
+
+    .field label {
+      font-family: var(--font-m);
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text2);
+    }
+
+    .field label .req { color: var(--gold); margin-left: 3px; }
+
+    .field input,
+    .field textarea,
+    .field select {
+      background: var(--bg);
+      border: 1px solid var(--border2);
+      border-radius: 6px;
+      padding: 10px 13px;
+      color: var(--text);
+      font-family: var(--font-b);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      width: 100%;
+    }
+
+    .field input:focus,
+    .field textarea:focus,
+    .field select:focus {
+      border-color: var(--gold2);
+      box-shadow: 0 0 0 3px rgba(232,184,75,0.08);
+    }
+
+    .field input::placeholder,
+    .field textarea::placeholder { color: var(--muted); }
+
+    .field textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+    .field select { cursor: pointer; }
+    .field select option { background: var(--surface2); }
+
+    .field-hint {
+      font-family: var(--font-m);
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+    /* ══ TAG INPUT ══ */
+    .tag-wrap {
+      background: var(--bg);
+      border: 1px solid var(--border2);
+      border-radius: 6px;
+      padding: 7px 9px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      min-height: 44px;
+      align-items: flex-start;
+      cursor: text;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .tag-wrap:focus-within {
+      border-color: var(--gold2);
+      box-shadow: 0 0 0 3px rgba(232,184,75,0.08);
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--goldring);
+      border: 1px solid rgba(232,184,75,0.25);
+      color: var(--gold3);
+      font-family: var(--font-m);
+      font-size: 11px;
+      padding: 3px 8px 3px 10px;
+      border-radius: 4px;
+      animation: tagPop 0.15s ease;
+    }
+
+    @keyframes tagPop {
+      from { transform: scale(0.8); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+
+    .tag-x {
+      background: none;
+      border: none;
+      color: var(--gold2);
+      cursor: pointer;
+      font-size: 13px;
+      line-height: 1;
+      padding: 0 2px;
+      transition: color 0.1s;
+    }
+
+    .tag-x:hover { color: var(--red); }
+
+    .tag-input {
+      border: none;
+      outline: none;
+      background: transparent;
+      color: var(--text);
+      font-family: var(--font-b);
+      font-size: 13px;
+      flex: 1;
+      min-width: 100px;
+      padding: 2px 4px;
+    }
+
+    .tag-input::placeholder { color: var(--muted); }
+
+    /* ══ TONE SELECTOR ══ */
+    .tone-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .tone-btn {
+      background: var(--bg);
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      padding: 14px 16px;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s;
+      font-family: var(--font-b);
+      color: inherit;
+      width: 100%;
+    }
+
+    .tone-btn:hover { border-color: var(--gold2); background: var(--goldfade); }
+    .tone-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+    .tone-btn.selected {
+      border-color: var(--gold);
+      background: var(--goldfade);
+      box-shadow: 0 0 0 1px var(--gold);
+    }
+
+    .tone-emoji { font-size: 20px; display: block; margin-bottom: 7px; }
+
+    .tone-name {
+      font-family: var(--font-d);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 3px;
+    }
+
+    .tone-btn.selected .tone-name { color: var(--gold); }
+
+    .tone-desc {
+      font-family: var(--font-m);
+      font-size: 10px;
+      color: var(--text3);
+      line-height: 1.5;
+    }
+
+    /* ══ VALUE PROPS ══ */
+    .vp-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+
+    .vp-row {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto;
+      gap: 8px;
+      align-items: center;
+      animation: tagPop 0.2s ease;
+    }
+
+    .vp-arrow {
+      font-family: var(--font-m);
+      font-size: 14px;
+      color: var(--gold2);
+      text-align: center;
+    }
+
+    .vp-input {
+      background: var(--bg);
+      border: 1px solid var(--border2);
+      border-radius: 6px;
+      padding: 9px 12px;
+      color: var(--text);
+      font-family: var(--font-b);
+      font-size: 12px;
+      outline: none;
+      width: 100%;
+      transition: border-color 0.15s;
+    }
+
+    .vp-input:focus { border-color: var(--gold2); }
+    .vp-input::placeholder { color: var(--muted); font-size: 11px; }
+
+    .vp-del {
+      width: 30px; height: 30px;
+      background: transparent;
+      border: 1px solid var(--border2);
+      border-radius: 5px;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 14px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+
+    .vp-del:hover { border-color: var(--red); color: var(--red); background: rgba(232,75,106,0.08); }
+
+    .add-row-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border: 1px dashed var(--border2);
+      background: transparent;
+      color: var(--text2);
+      font-family: var(--font-m);
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .add-row-btn:hover { border-color: var(--gold2); color: var(--gold); }
+    .add-row-btn:focus-visible { outline: 2px solid var(--gold2); outline-offset: 2px; }
+
+    /* ══ SEQUENCE TIMELINE ══ */
+    .sequence-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      position: relative;
+    }
+
+    /* vertical line */
+    .sequence-list::before {
+      content: '';
+      position: absolute;
+      left: 19px;
+      top: 24px;
+      bottom: 24px;
+      width: 2px;
+      background: linear-gradient(180deg, var(--gold2), transparent);
+      opacity: 0.3;
+    }
+
+    .seq-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 12px 0;
+      position: relative;
+      cursor: grab;
+      transition: background 0.15s;
+      border-radius: 6px;
+      padding-left: 4px;
+    }
+
+    .seq-item:active { cursor: grabbing; }
+    .seq-item.dragging { opacity: 0.4; }
+    .seq-item.drag-over { background: var(--goldfade); }
+
+    .seq-dot {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: var(--surface3);
+      border: 2px solid var(--border2);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-m);
+      font-size: 11px;
+      color: var(--text3);
+      flex-shrink: 0;
+      transition: border-color 0.2s, color 0.2s;
+      z-index: 1;
+    }
+
+    .seq-item:hover .seq-dot { border-color: var(--gold2); color: var(--gold); }
+
+    .seq-body { flex: 1; }
+
+    .seq-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .seq-day {
+      font-family: var(--font-m);
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: var(--gold2);
+      text-transform: uppercase;
+    }
+
+    .seq-type {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .seq-type-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: var(--font-m);
+      font-size: 9px;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      border: 1px solid;
+      transition: all 0.1s;
+    }
+
+    .pill-email   { background: rgba(74,143,255,0.1); color: var(--blue);   border-color: rgba(74,143,255,0.25); }
+    .pill-linkedin{ background: rgba(155,109,255,0.1);color: var(--purple); border-color: rgba(155,109,255,0.25); }
+    .pill-task    { background: rgba(255,179,71,0.1); color: var(--amber);  border-color: rgba(255,179,71,0.25); }
+
+    .seq-subject {
+      background: var(--bg);
+      border: 1px solid var(--border2);
+      border-radius: 5px;
+      padding: 8px 11px;
+      color: var(--text);
+      font-family: var(--font-b);
+      font-size: 12px;
+      outline: none;
+      width: 100%;
+      transition: border-color 0.15s;
+    }
+
+    .seq-subject:focus { border-color: var(--gold2); }
+    .seq-subject::placeholder { color: var(--muted); }
+
+    .seq-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 6px;
+    }
+
+    .seq-delay {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-m);
+      font-size: 10px;
+      color: var(--text3);
+    }
+
+    .delay-input {
+      width: 44px;
+      background: var(--bg);
+      border: 1px solid var(--border2);
+      border-radius: 4px;
+      padding: 3px 6px;
+      color: var(--text);
+      font-family: var(--font-m);
+      font-size: 11px;
+      text-align: center;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .delay-input:focus { border-color: var(--gold2); }
+
+    .seq-del {
+      margin-left: auto;
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--muted);
+      font-size: 14px;
+      cursor: pointer;
+      padding: 4px 6px;
+      border-radius: 4px;
+      transition: all 0.15s;
+    }
+
+    .seq-del:hover { border-color: var(--red); color: var(--red); }
+
+    .seq-drag-handle {
+      color: var(--muted);
+      font-size: 12px;
+      cursor: grab;
+      padding: 2px 4px;
+    }
+
+    /* ══ LEADS UPLOAD ══ */
+    .upload-zone {
+      border: 2px dashed var(--border2);
+      border-radius: 10px;
+      padding: 36px;
+      text-align: center;
+      transition: all 0.2s;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .upload-zone:hover,
+    .upload-zone.dragover {
+      border-color: var(--gold2);
+      background: var(--goldfade);
+    }
+
+    .upload-zone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .upload-icon { font-size: 32px; margin-bottom: 10px; display: block; }
+
+    .upload-label {
+      font-family: var(--font-d);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .upload-sub {
+      font-family: var(--font-m);
+      font-size: 11px;
+      color: var(--text3);
+    }
+
+    .upload-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      justify-content: center;
+    }
+
+    .import-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 18px;
+      background: var(--surface3);
+      border: 1px solid var(--border2);
+      border-radius: 6px;
+      color: var(--text2);
+      font-family: var(--font-m);
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-transform: uppercase;
+    }
+
+    .import-btn:hover { border-color: var(--gold2); color: var(--gold); }
+    .import-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+    /* Leads stat bar */
+    .leads-stat-bar {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 14px 18px;
+      background: var(--surface3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .lsb-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .lsb-val {
+      font-family: var(--font-d);
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--gold);
+      line-height: 1;
+    }
+
+    .lsb-lbl {
+      font-family: var(--font-m);
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--muted);
+    }
+
+    .lsb-divider {
+      width: 1px;
+      height: 36px;
+      background: var(--border);
+    }
+
+    .lsb-removed .lsb-val { color: var(--red); }
+    .lsb-ready .lsb-val { color: var(--green); }
+
+    /* ══ A/B TEST TOGGLE ══ */
+    .ab-section {
+      background: var(--surface3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+    }
+
+    .ab-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0;
+    }
+
+    .ab-title-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .ab-title {
+      font-family: var(--font-d);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .ab-badge {
+      font-family: var(--font-m);
+      font-size: 9px;
+      letter-spacing: 1px;
+      padding: 2px 7px;
+      border-radius: 3px;
+      background: rgba(155,109,255,0.12);
+      border: 1px solid rgba(155,109,255,0.25);
+      color: var(--purple);
+    }
+
+    /* Toggle switch */
+    .toggle-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toggle-label {
+      font-family: var(--font-m);
+      font-size: 11px;
+      color: var(--text3);
+    }
+
+    .toggle {
+      position: relative;
+      width: 40px;
+      height: 22px;
+      flex-shrink: 0;
+    }
+
+    .toggle input { opacity: 0; width: 0; height: 0; }
+
+    .toggle-slider {
+      position: absolute;
+      inset: 0;
+      background: var(--border2);
+      border-radius: 22px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .toggle-slider::before {
+      content: '';
+      position: absolute;
+      height: 16px; width: 16px;
+      left: 3px; top: 3px;
+      background: var(--text3);
+      border-radius: 50%;
+      transition: transform 0.2s, background 0.2s;
+    }
+
+    .toggle input:checked + .toggle-slider { background: var(--goldfade); border: 1px solid var(--goldring); }
+    .toggle input:checked + .toggle-slider::before { transform: translateX(18px); background: var(--gold); }
+    .toggle input:focus-visible + .toggle-slider { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+    .ab-body {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .ab-variant {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+
+    .ab-variant-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .ab-variant-label {
+      font-family: var(--font-m);
+      font-size: 11px;
+      letter-spacing: 1px;
+      color: var(--text2);
+    }
+
+    .ab-split {
+      font-family: var(--font-m);
+      font-size: 10px;
+      color: var(--gold2);
+    }
+
+    /* ══ AI PREVIEW ══ */
+    .ai-preview-box {
+      background: var(--bg);
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .ai-preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface3);
+    }
+
+    .ai-preview-title {
+      font-family: var(--font-m);
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text3);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .ai-sparkle {
+      color: var(--gold);
+      font-size: 12px;
+    }
+
+    .ai-preview-body {
+      padding: 16px;
+      font-size: 13px;
+      color: var(--text2);
+      line-height: 1.7;
+      min-height: 100px;
+      font-family: var(--font-b);
+    }
+
+    .ai-preview-body .ai-hl { color: var(--gold3); }
+    .ai-preview-body em { font-style: italic; color: var(--text2); }
+
+    .ai-gen-btn {
+      padding: 6px 14px;
+      background: var(--goldfade);
+      border: 1px solid var(--goldring);
+      color: var(--gold);
+      font-family: var(--font-m);
+      font-size: 10px;
+      letter-spacing: 1px;
+      border-radius: 5px;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.15s;
+    }
+
+    .ai-gen-btn:hover { background: var(--goldring); }
+    .ai-gen-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+    .ai-gen-btn.generating {
+      pointer-events: none;
+      opacity: 0.6;
+    }
+
+    /* Typing animation */
+    .typing::after {
+      content: '▋';
+      animation: blink 0.6s steps(1) infinite;
+    }
+
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+
+    /* ══ BOTTOM LAUNCH BAR ══ */
+    .launch-bar {
+      padding: 14px 36px;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .launch-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .launch-stat {
+      font-family: var(--font-m);
+      font-size: 11px;
+      color: var(--text3);
+    }
+
+    .launch-stat strong { color: var(--text2); font-weight: 500; }
+
+    .launch-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-ghost {
+      padding: 10px 20px;
+      border: 1px solid var(--border2);
+      background: transparent;
+      color: var(--text2);
+      font-family: var(--font-m);
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-ghost:hover { border-color: var(--gold2); color: var(--gold); }
+    .btn-ghost:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+    .btn-launch {
+      padding: 10px 28px;
+      background: var(--gold);
+      color: var(--bg);
+      border: none;
+      border-radius: 6px;
+      font-family: var(--font-m);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-launch:hover {
+      background: var(--gold3);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(232,184,75,0.3);
+    }
+
+    .btn-launch:active { transform: translateY(0); }
+    .btn-launch:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+    .btn-launch .arrow { transition: transform 0.15s; }
+    .btn-launch:hover .arrow { transform: translateX(3px); }
+
+    /* ══ TOAST ══ */
+    .toast-container {
+      position: fixed;
+      bottom: 80px;
+      right: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+    }
+
+    .toast {
+      background: var(--surface3);
+      border: 1px solid var(--border2);
+      border-left: 3px solid var(--green);
+      border-radius: 8px;
+      padding: 11px 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      min-width: 260px;
+      max-width: 340px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      pointer-events: all;
+      animation: toastIn 0.3s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    .toast.leaving { animation: toastOut 0.25s ease forwards; }
+
+    @keyframes toastIn  { from { opacity:0; transform:translateX(16px); } to { opacity:1; transform:translateX(0); } }
+    @keyframes toastOut { from { opacity:1; transform:translateX(0); } to { opacity:0; transform:translateX(16px); } }
+
+    .toast.warn  { border-left-color: var(--amber); }
+    .toast.info  { border-left-color: var(--blue); }
+    .toast.error { border-left-color: var(--red); }
+
+    .toast-ico { font-size: 14px; flex-shrink: 0; }
+    .toast-ttl { font-size: 12px; font-weight: 600; color: var(--text); }
+    .toast-msg { font-size: 11px; color: var(--text2); margin-top: 1px; }
+
+    /* ══ SCROLLBAR ══ */
+    ::-webkit-scrollbar       { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--border3); }
+
+    /* ══ RESPONSIVE ══ */
+    @media (max-width: 900px) {
+      .shell { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .tone-grid { grid-template-columns: 1fr 1fr; }
+      .vp-row { grid-template-columns: 1fr auto 1fr auto; }
+      .ab-body { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- ══ TOPNAV ══ -->
+  <nav class="topnav" aria-label="Global">
+    <div class="brand">
+      <div class="brand-s" aria-hidden="true">S</div>
+      <span class="brand-name">Soldiro AI</span>
+    </div>
+    <div class="breadcrumb" aria-label="Breadcrumb">
+      <span>Campaigns</span>
+      <span class="breadcrumb-sep" aria-hidden="true">›</span>
+      <span class="breadcrumb-cur" aria-current="page">New Campaign</span>
+    </div>
+    <div class="topnav-right">
+      <button class="nav-chip" onclick="saveDraft()">Save Draft</button>
+      <button class="nav-chip" onclick="showToast('Preview','Opening email preview…','info')">Preview</button>
+      <div class="live-dot" aria-hidden="true" title="Agent active"></div>
+    </div>
+  </nav>
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar" aria-label="Campaigns navigation">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Campaigns</div>
+      <button class="sidebar-item">
+        <span class="si-icon" aria-hidden="true">📊</span> Dashboard
+      </button>
+      <button class="sidebar-item active" aria-current="page">
+        <span class="si-icon" aria-hidden="true">➕</span> New Campaign
+      </button>
+      <button class="sidebar-item">
+        <span class="si-icon" aria-hidden="true">🎯</span> Q1 Enterprise
+        <span class="si-badge">LIVE</span>
+      </button>
+      <button class="sidebar-item">
+        <span class="si-icon" aria-hidden="true">🎯</span> SaaS Founders
+        <span class="si-badge">LIVE</span>
+      </button>
+      <button class="sidebar-item">
+        <span class="si-icon" aria-hidden="true">🎯</span> Fintech DMs
+        <span class="si-badge">LIVE</span>
+      </button>
+    </div>
+
+    <div class="sidebar-divider" role="separator"></div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Drafts</div>
+      <button class="sidebar-item">
+        <span class="si-icon" aria-hidden="true">📝</span> EMEA Launch
+      </button>
+      <button class="sidebar-item">
+        <span class="si-icon" aria-hidden="true">📝</span> HR Tech Q2
+      </button>
+    </div>
+
+    <div class="sidebar-divider" role="separator"></div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Templates</div>
+      <button class="sidebar-item">
+        <span class="si-icon" aria-hidden="true">📁</span> Challenger Opener
+      </button>
+      <button class="sidebar-item">
+        <span class="si-icon" aria-hidden="true">📁</span> Data-Led Sequence
+      </button>
+    </div>
+  </aside>
+
+  <!-- ══ MAIN ══ -->
+  <main class="main" id="main">
+
+    <!-- Tab bar -->
+    <div class="tab-bar" role="tablist" aria-label="Campaign setup steps">
+      <button class="tab active" role="tab" aria-selected="true" aria-controls="panel-targeting"
+              id="tab-0" onclick="switchTab(0)">
+        <span class="tab-num">1</span> Targeting
+      </button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="panel-messaging"
+              id="tab-1" onclick="switchTab(1)">
+        <span class="tab-num">2</span> Messaging
+      </button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="panel-sequence"
+              id="tab-2" onclick="switchTab(2)">
+        <span class="tab-num">3</span> Sequence
+      </button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="panel-leads"
+              id="tab-3" onclick="switchTab(3)">
+        <span class="tab-num">4</span> Leads
+      </button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="panel-review"
+              id="tab-4" onclick="switchTab(4)">
+        <span class="tab-num">5</span> Review &amp; Launch
+      </button>
+    </div>
+
+    <!-- ══ CONTENT ══ -->
+    <div class="content">
+
+      <!-- ─── PANEL 1: TARGETING ─── -->
+      <div class="panel active" id="panel-targeting" role="tabpanel" aria-labelledby="tab-0">
+        <div class="panel-header">
+          <div class="panel-eyebrow">Step 1 · ICP Definition</div>
+          <h1 class="panel-title">Who are you <em>targeting?</em></h1>
+          <p class="panel-sub">Soldiro AI uses these signals to score, filter, and rank leads from your pipeline. Precision here = better reply rates.</p>
+        </div>
+
+        <!-- Basics -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="card-title-icon" aria-hidden="true">📋</span> Campaign Basics</div>
+          </div>
+          <div class="card-body">
+            <div class="grid-2" style="gap:16px">
+              <div class="field">
+                <label for="campaignName">Campaign Name <span class="req">*</span></label>
+                <input type="text" id="campaignName" placeholder="Q1 Enterprise Outreach" value="Q1 Enterprise Outreach">
+              </div>
+              <div class="field">
+                <label for="campaignGoal">Primary Goal</label>
+                <select id="campaignGoal">
+                  <option value="meetings">Book discovery calls</option>
+                  <option value="demo">Schedule demos</option>
+                  <option value="reply">Generate replies</option>
+                  <option value="event">Drive event registrations</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ICP Filters -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="card-title-icon" aria-hidden="true">🎯</span> ICP Filters</div>
+            <button class="ai-gen-btn" onclick="applyICPSuggestions()" aria-label="Apply AI suggestions to ICP">✦ AI Suggest</button>
+          </div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:18px">
+            <div class="grid-2">
+              <div class="field">
+                <label for="companySize">Company Size <span class="req">*</span></label>
+                <select id="companySize">
+                  <option value="">Any</option>
+                  <option value="1-10">1–10</option>
+                  <option value="11-50">11–50</option>
+                  <option selected value="51-200">51–200</option>
+                  <option value="201-500">201–500</option>
+                  <option value="501-1000">501–1,000</option>
+                  <option value="1001+">1,001+</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="geography">Geography <span class="req">*</span></label>
+                <select id="geography">
+                  <option value="us" selected>United States</option>
+                  <option value="uk">United Kingdom</option>
+                  <option value="eu">Europe</option>
+                  <option value="global">Global</option>
+                  <option value="apac">APAC</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="fundingStage">Funding Stage</label>
+                <select id="fundingStage">
+                  <option value="">Any</option>
+                  <option value="bootstrapped">Bootstrapped</option>
+                  <option value="seed">Seed</option>
+                  <option value="series-a" selected>Series A</option>
+                  <option value="series-b">Series B</option>
+                  <option value="series-c">Series C+</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="seniority">Minimum Seniority</label>
+                <select id="seniority">
+                  <option value="any">Any</option>
+                  <option value="manager">Manager+</option>
+                  <option value="director" selected>Director+</option>
+                  <option value="vp">VP+</option>
+                  <option value="c-suite">C-Suite only</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Target Industries <span class="req">*</span></label>
+              <div class="tag-wrap" id="industryWrap" onclick="focusInput('industryInput')" role="group" aria-label="Target industries">
+                <div class="tag">SaaS / Software<button class="tag-x" onclick="removeTag('industry','SaaS / Software')" aria-label="Remove SaaS / Software">×</button></div>
+                <div class="tag">Fintech<button class="tag-x" onclick="removeTag('industry','Fintech')" aria-label="Remove Fintech">×</button></div>
+                <div class="tag">Sales Tech<button class="tag-x" onclick="removeTag('industry','Sales Tech')" aria-label="Remove Sales Tech">×</button></div>
+                <input type="text" id="industryInput" class="tag-input" placeholder="Add industry…" onkeydown="handleTag(event,'industry')" aria-label="Add industry">
+              </div>
+              <div class="field-hint">Press Enter to add. e.g. "HR Tech", "Legal Tech", "DevTools"</div>
+            </div>
+
+            <div class="field">
+              <label>Target Job Titles <span class="req">*</span></label>
+              <div class="tag-wrap" id="titlesWrap" onclick="focusInput('titlesInput')" role="group" aria-label="Target job titles">
+                <div class="tag">VP Sales<button class="tag-x" onclick="removeTag('titles','VP Sales')" aria-label="Remove VP Sales">×</button></div>
+                <div class="tag">CRO<button class="tag-x" onclick="removeTag('titles','CRO')" aria-label="Remove CRO">×</button></div>
+                <div class="tag">Head of Revenue<button class="tag-x" onclick="removeTag('titles','Head of Revenue')" aria-label="Remove Head of Revenue">×</button></div>
+                <input type="text" id="titlesInput" class="tag-input" placeholder="Add title…" onkeydown="handleTag(event,'titles')" aria-label="Add job title">
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Exclusions</label>
+              <div class="tag-wrap" id="exclusionsWrap" onclick="focusInput('exclusionsInput')" role="group" aria-label="Exclusions">
+                <input type="text" id="exclusionsInput" class="tag-input" placeholder="e.g. competitors, agencies, government…" onkeydown="handleTag(event,'exclusions')" aria-label="Add exclusion">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /panel-targeting -->
+
+      <!-- ─── PANEL 2: MESSAGING ─── -->
+      <div class="panel" id="panel-messaging" role="tabpanel" aria-labelledby="tab-1">
+        <div class="panel-header">
+          <div class="panel-eyebrow">Step 2 · Outreach Personality</div>
+          <h1 class="panel-title">How should Soldiro <em>sound?</em></h1>
+          <p class="panel-sub">Claude adapts its writing voice to match your chosen tone. This shapes every email, first line, and subject across all 5 sequence steps.</p>
+        </div>
+
+        <!-- Tone Selector -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="card-title-icon" aria-hidden="true">🎙</span> Tone &amp; Voice</div>
+          </div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:18px">
+            <div class="tone-grid" role="radiogroup" aria-label="Select tone">
+              <button class="tone-btn selected" role="radio" aria-checked="true" onclick="selectTone(this,'direct')">
+                <span class="tone-emoji" aria-hidden="true">⚡</span>
+                <div class="tone-name">Direct &amp; Sharp</div>
+                <div class="tone-desc">Short sentences, no fluff. C-suite and founders.</div>
+              </button>
+              <button class="tone-btn" role="radio" aria-checked="false" onclick="selectTone(this,'consultative')">
+                <span class="tone-emoji" aria-hidden="true">🎯</span>
+                <div class="tone-name">Consultative</div>
+                <div class="tone-desc">Insight-led. Shows deep understanding before the pitch.</div>
+              </button>
+              <button class="tone-btn" role="radio" aria-checked="false" onclick="selectTone(this,'challenger')">
+                <span class="tone-emoji" aria-hidden="true">🔥</span>
+                <div class="tone-name">Challenger</div>
+                <div class="tone-desc">Provocation first. Counterintuitive insight to open.</div>
+              </button>
+              <button class="tone-btn" role="radio" aria-checked="false" onclick="selectTone(this,'friendly')">
+                <span class="tone-emoji" aria-hidden="true">😊</span>
+                <div class="tone-name">Warm &amp; Friendly</div>
+                <div class="tone-desc">Conversational, human. Works in lower-formality verticals.</div>
+              </button>
+              <button class="tone-btn" role="radio" aria-checked="false" onclick="selectTone(this,'data')">
+                <span class="tone-emoji" aria-hidden="true">📊</span>
+                <div class="tone-name">Data-Driven</div>
+                <div class="tone-desc">Stats, benchmarks, ROI language. Analytics-minded buyers.</div>
+              </button>
+              <button class="tone-btn" role="radio" aria-checked="false" onclick="selectTone(this,'story')">
+                <span class="tone-emoji" aria-hidden="true">📖</span>
+                <div class="tone-name">Story-Led</div>
+                <div class="tone-desc">"We worked with a company just like yours." Builds trust.</div>
+              </button>
+            </div>
+
+            <div class="grid-2">
+              <div class="field">
+                <label for="senderName">Sender Name</label>
+                <input type="text" id="senderName" placeholder="Alex from Soldiro">
+              </div>
+              <div class="field">
+                <label for="signatureLine">Signature</label>
+                <input type="text" id="signatureLine" placeholder="Alex Chen · Head of Growth">
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="toneNotes">Custom Tone Notes — injected verbatim into Claude's system prompt</label>
+              <textarea id="toneNotes" placeholder="e.g. Never use the word 'synergy'. Always mention their recent funding round. Keep emails under 75 words."></textarea>
+              <div class="field-hint">Claude follows these instructions literally — be specific.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Value Props -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="card-title-icon" aria-hidden="true">💡</span> Value Propositions</div>
+            <button class="ai-gen-btn" onclick="generateVPs()" aria-label="Generate value propositions with AI">✦ Generate with AI</button>
+          </div>
+          <div class="card-body">
+            <p style="font-size:12px;color:var(--text3);margin-bottom:14px;font-family:var(--font-m)">Claude rotates through these pain→solution pairs across the 5-step sequence. Add at least 3 for variety.</p>
+            <div class="vp-list" id="vpList"></div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <button class="add-row-btn" onclick="addVP()" aria-label="Add value proposition">
+                <span aria-hidden="true">+</span> Add Pain → Solution
+              </button>
+              <span style="font-family:var(--font-m);font-size:10px;color:var(--muted)" aria-live="polite" id="vpCount"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- CTA + Social Proof -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="card-title-icon" aria-hidden="true">🎬</span> CTA &amp; Social Proof</div>
+          </div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:16px">
+            <div class="grid-2">
+              <div class="field">
+                <label for="primaryCTA">Primary CTA</label>
+                <select id="primaryCTA">
+                  <option>Book a 15-min call</option>
+                  <option>Schedule a demo</option>
+                  <option>Reply if interested</option>
+                  <option>Watch a 3-min video</option>
+                  <option>Get a free audit</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="ctaUrl">CTA URL / Calendar Link</label>
+                <input type="url" id="ctaUrl" placeholder="https://cal.com/yourlink">
+              </div>
+            </div>
+            <div class="field">
+              <label for="socialProof">Social Proof — used in Email 3</label>
+              <input type="text" id="socialProof" placeholder="We helped Intercom reduce churn by 34% in 90 days — here's how.">
+              <div class="field-hint">Real numbers outperform vague claims 4×. Include a specific client and outcome.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI Preview -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="card-title-icon" aria-hidden="true">✨</span> AI Email Preview</div>
+            <button class="ai-gen-btn" id="previewBtn" onclick="generatePreview()" aria-label="Generate email preview with AI">✦ Generate Preview</button>
+          </div>
+          <div class="ai-preview-box" style="border:none">
+            <div class="ai-preview-header">
+              <div class="ai-preview-title">
+                <span class="ai-sparkle" aria-hidden="true">✦</span>
+                Claude-generated first-line preview
+              </div>
+              <span style="font-family:var(--font-m);font-size:10px;color:var(--text3)">Based on your tone + value props</span>
+            </div>
+            <div class="ai-preview-body" id="aiPreviewBody" aria-live="polite">
+              <span style="color:var(--muted);font-family:var(--font-m);font-size:11px">Click "Generate Preview" to see how Claude would open an email to a prospect at a target company.</span>
+            </div>
+          </div>
+        </div>
+      </div><!-- /panel-messaging -->
+
+      <!-- ─── PANEL 3: SEQUENCE ─── -->
+      <div class="panel" id="panel-sequence" role="tabpanel" aria-labelledby="tab-2">
+        <div class="panel-header">
+          <div class="panel-eyebrow">Step 3 · Sequence Design</div>
+          <h1 class="panel-title">Build the <em>5-step sequence.</em></h1>
+          <p class="panel-sub">Drag to reorder. Each step can be an email, LinkedIn touch, or manual task. Claude writes the copy for email steps automatically.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="card-title-icon" aria-hidden="true">📅</span> Sequence Steps</div>
+            <div style="display:flex;gap:8px">
+              <button class="ai-gen-btn" onclick="addSeqStep()" aria-label="Add sequence step">+ Add Step</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="sequence-list" id="seqList" role="list" aria-label="Email sequence steps">
+              <!-- populated by JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- A/B Testing -->
+        <div class="ab-section" id="abSection">
+          <div class="ab-header">
+            <div class="ab-title-row">
+              <div class="ab-title">A/B Test Messaging</div>
+              <span class="ab-badge">SPLIT TEST</span>
+            </div>
+            <div class="toggle-wrap">
+              <span class="toggle-label" id="abToggleLabel">Off</span>
+              <label class="toggle" aria-label="Enable A/B test">
+                <input type="checkbox" id="abToggle" onchange="toggleAB()" role="switch">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+          <div class="ab-body" id="abBody" style="display:none" aria-live="polite">
+            <div class="ab-variant">
+              <div class="ab-variant-header">
+                <div class="ab-variant-label">VARIANT A</div>
+                <div class="ab-split" id="splitA">50%</div>
+              </div>
+              <div class="field">
+                <label for="variantA">Subject line / hook</label>
+                <input type="text" id="variantA" placeholder="Direct opener — straight to the value prop">
+              </div>
+            </div>
+            <div class="ab-variant">
+              <div class="ab-variant-header">
+                <div class="ab-variant-label">VARIANT B</div>
+                <div class="ab-split" id="splitB">50%</div>
+              </div>
+              <div class="field">
+                <label for="variantB">Subject line / hook</label>
+                <input type="text" id="variantB" placeholder="Question opener — lead with curiosity">
+              </div>
+            </div>
+            <div style="grid-column:1/-1">
+              <div class="field">
+                <label for="abMetric">Success Metric</label>
+                <select id="abMetric">
+                  <option>Reply rate</option>
+                  <option>Open rate</option>
+                  <option>Click rate</option>
+                  <option>Meeting booking rate</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /panel-sequence -->
+
+      <!-- ─── PANEL 4: LEADS ─── -->
+      <div class="panel" id="panel-leads" role="tabpanel" aria-labelledby="tab-3">
+        <div class="panel-header">
+          <div class="panel-eyebrow">Step 4 · Lead Import</div>
+          <h1 class="panel-title">Load your <em>lead list.</em></h1>
+          <p class="panel-sub">Upload a CSV, import directly from Apollo, or paste a list of domains. Soldiro will deduplicate, verify emails, and score against your ICP.</p>
+        </div>
+
+        <!-- Upload zone -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="card-title-icon" aria-hidden="true">📁</span> Import Leads</div>
+          </div>
+          <div class="card-body">
+            <div class="upload-zone" id="uploadZone"
+                 role="button"
+                 tabindex="0"
+                 aria-label="Drop CSV file here or click to upload"
+                 ondragover="handleDragOver(event)"
+                 ondragleave="handleDragLeave(event)"
+                 ondrop="handleDrop(event)"
+                 onkeydown="if(e.key==='Enter'||e.key===' ')document.getElementById('csvInput').click()">
+              <input type="file" id="csvInput" accept=".csv,.xlsx,.txt" onchange="handleFileSelect(event)" aria-label="Upload CSV file">
+              <span class="upload-icon" aria-hidden="true">📂</span>
+              <div class="upload-label">Drop CSV here, or click to browse</div>
+              <div class="upload-sub">Supports .csv, .xlsx, .txt — columns: company_domain, first_name, last_name, email (optional)</div>
+            </div>
+
+            <div class="upload-actions">
+              <button class="import-btn" onclick="mockImport('apollo')" aria-label="Import leads from Apollo">
+                <span aria-hidden="true">🚀</span> Import from Apollo
+              </button>
+              <button class="import-btn" onclick="mockImport('linkedin')" aria-label="Import leads from LinkedIn">
+                <span aria-hidden="true">💼</span> LinkedIn Sales Nav
+              </button>
+              <button class="import-btn" onclick="showPasteModal()" aria-label="Paste domain list">
+                <span aria-hidden="true">📋</span> Paste Domain List
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats bar — shown after upload -->
+        <div id="leadsStatsCard" style="display:none">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><span class="card-title-icon" aria-hidden="true">📊</span> Lead Summary</div>
+              <button class="ai-gen-btn" onclick="showToast('ICP Scoring','Scoring all leads against your ICP…','info')" aria-label="Score leads against ICP">✦ Score vs ICP</button>
+            </div>
+            <div class="card-body">
+              <div class="leads-stat-bar" role="group" aria-label="Lead import statistics">
+                <div class="lsb-item">
+                  <div class="lsb-val" id="statTotal">—</div>
+                  <div class="lsb-lbl">Uploaded</div>
+                </div>
+                <div class="lsb-divider" aria-hidden="true"></div>
+                <div class="lsb-item lsb-removed">
+                  <div class="lsb-val" id="statRemoved">—</div>
+                  <div class="lsb-lbl">Removed (dupes/invalid)</div>
+                </div>
+                <div class="lsb-divider" aria-hidden="true"></div>
+                <div class="lsb-item lsb-ready">
+                  <div class="lsb-val" id="statReady">—</div>
+                  <div class="lsb-lbl">Ready to Enrich</div>
+                </div>
+                <div class="lsb-divider" aria-hidden="true"></div>
+                <div class="lsb-item">
+                  <div class="lsb-val" id="statIcpMatch" style="color:var(--blue)">—</div>
+                  <div class="lsb-lbl">Est. ICP Match</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Paste modal (inline) -->
+        <div id="pasteSection" style="display:none">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><span class="card-title-icon" aria-hidden="true">📋</span> Paste Domain List</div>
+              <button class="ai-gen-btn" onclick="processPaste()" aria-label="Process pasted domains">✦ Process</button>
+            </div>
+            <div class="card-body">
+              <div class="field">
+                <label for="pasteArea">One domain per line</label>
+                <textarea id="pasteArea" style="min-height:140px;font-family:var(--font-m);font-size:12px" placeholder="stripe.com&#10;vercel.com&#10;linear.app&#10;figma.com"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /panel-leads -->
+
+      <!-- ─── PANEL 5: REVIEW ─── -->
+      <div class="panel" id="panel-review" role="tabpanel" aria-labelledby="tab-4">
+        <div class="panel-header">
+          <div class="panel-eyebrow">Step 5 · Pre-Launch Review</div>
+          <h1 class="panel-title"><em>Ready</em> to launch?</h1>
+          <p class="panel-sub">Review your configuration before going live. All API keys are pre-loaded from your onboarding config.</p>
+        </div>
+
+        <div id="reviewContent" aria-live="polite">
+          <!-- populated by JS -->
+        </div>
+      </div><!-- /panel-review -->
+
+    </div><!-- /content -->
+
+    <!-- ══ LAUNCH BAR ══ -->
+    <div class="launch-bar" role="contentinfo">
+      <div class="launch-meta">
+        <span class="launch-stat">Campaign: <strong id="launchCampaignName">Q1 Enterprise Outreach</strong></span>
+        <span class="launch-stat">Leads: <strong id="launchLeadCount">—</strong></span>
+        <span class="launch-stat">Sequence: <strong id="launchSeqSteps">5 steps</strong></span>
+      </div>
+      <div class="launch-actions">
+        <button class="btn-ghost" onclick="saveDraft()">💾 Save Draft</button>
+        <button class="btn-ghost" onclick="switchTab(4)">Review →</button>
+        <button class="btn-launch" onclick="launchCampaign()" aria-label="Launch campaign">
+          <span aria-hidden="true">⚡</span> Launch Campaign <span class="arrow" aria-hidden="true">→</span>
+        </button>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Toast container -->
+<div class="toast-container" id="toastContainer" role="status" aria-live="polite" aria-atomic="false"></div>
+
+<script>
+/* ═══════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════ */
+let currentTab = 0;
+const TABS = ['targeting', 'messaging', 'sequence', 'leads', 'review'];
+
+let selectedToneVal = 'direct';
+
+let vpData = [
+  { pain: 'SDR ramp time is 90+ days',           solution: 'Soldiro AI is live in 5 days, first meetings in week 2' },
+  { pain: 'Outreach is generic and gets ignored', solution: 'Claude writes a unique first line per company — 4× higher reply rates' },
+  { pain: 'Team spends 40+ hrs/week prospecting', solution: 'Fully automated enrichment pipeline — zero human touch required' },
+];
+
+let seqData = [
+  { day: 1,  type: 'email',    subject: 'Quick question about {company_name}\'s SDR setup',  delay: 0 },
+  { day: 3,  type: 'email',    subject: 'Re: {company_name} — the 5-day deployment question', delay: 2 },
+  { day: 5,  type: 'linkedin', subject: 'LinkedIn connection request + note',                  delay: 2 },
+  { day: 7,  type: 'email',    subject: 'How Intercom cut ramp time by 60% (case study)',      delay: 2 },
+  { day: 14, type: 'email',    subject: 'Closing the loop on {company_name}',                  delay: 7 },
+];
+
+let leadsData = { total: 0, removed: 0, ready: 0, icpMatch: 0 };
+
+/* ═══════════════════════════════════════════
+   TAB NAVIGATION
+═══════════════════════════════════════════ */
+function switchTab(n) {
+  // Mark previous as done
+  document.getElementById('tab-' + currentTab).classList.remove('active');
+  document.getElementById('tab-' + currentTab).setAttribute('aria-selected','false');
+  if (n > currentTab) {
+    document.getElementById('tab-' + currentTab).classList.add('done');
+  }
+
+  document.getElementById('panel-' + TABS[currentTab]).classList.remove('active');
+
+  currentTab = n;
+
+  document.getElementById('tab-' + currentTab).classList.remove('done');
+  document.getElementById('tab-' + currentTab).classList.add('active');
+  document.getElementById('tab-' + currentTab).setAttribute('aria-selected','true');
+  document.getElementById('panel-' + TABS[currentTab]).classList.add('active');
+
+  if (currentTab === 4) buildReview();
+}
+
+/* ═══════════════════════════════════════════
+   TAG INPUT
+═══════════════════════════════════════════ */
+const tagSets = { industry: [], titles: [], exclusions: [] };
+
+function handleTag(e, key) {
+  if (e.key === 'Enter' || e.key === ',') {
+    e.preventDefault();
+    const val = e.target.value.trim().replace(/,$/,'');
+    if (val && !tagSets[key].includes(val)) {
+      tagSets[key].push(val);
+      addTagEl(key, val);
+    }
+    e.target.value = '';
+  }
+  if (e.key === 'Backspace' && e.target.value === '' && tagSets[key].length) {
+    const last = tagSets[key].pop();
+    removeTagEl(key, last);
+  }
+}
+
+function addTagEl(key, val) {
+  const wrap = document.getElementById(key + 'Wrap');
+  const input = document.getElementById(key + 'Input');
+  const tag = document.createElement('div');
+  tag.className = 'tag';
+  tag.setAttribute('data-val', val);
+  const span = document.createElement('span');
+  span.textContent = esc(val);
+  const btn = document.createElement('button');
+  btn.className = 'tag-x';
+  btn.setAttribute('aria-label', 'Remove ' + esc(val));
+  btn.textContent = '×';
+  btn.onclick = () => removeTag(key, val);
+  tag.append(span, btn);
+  wrap.insertBefore(tag, input);
+}
+
+function removeTag(key, val) {
+  tagSets[key] = tagSets[key].filter(t => t !== val);
+  removeTagEl(key, val);
+}
+
+function removeTagEl(key, val) {
+  const wrap = document.getElementById(key + 'Wrap');
+  const tag = wrap.querySelector(`[data-val="${CSS.escape(val)}"]`);
+  if (tag) tag.remove();
+}
+
+function focusInput(id) { document.getElementById(id)?.focus(); }
+
+function applyICPSuggestions() {
+  showToast('AI Suggestions', 'ICP suggestions would come from your onboarding config', 'info');
+}
+
+/* ═══════════════════════════════════════════
+   TONE SELECTION
+═══════════════════════════════════════════ */
+function selectTone(btn, tone) {
+  document.querySelectorAll('.tone-btn').forEach(b => {
+    b.classList.remove('selected');
+    b.setAttribute('aria-checked', 'false');
+  });
+  btn.classList.add('selected');
+  btn.setAttribute('aria-checked', 'true');
+  selectedToneVal = tone;
+}
+
+/* ═══════════════════════════════════════════
+   VALUE PROPS
+═══════════════════════════════════════════ */
+function renderVPs() {
+  const list = document.getElementById('vpList');
+  list.innerHTML = '';
+  vpData.forEach((vp, i) => {
+    const row = document.createElement('div');
+    row.className = 'vp-row';
+    row.setAttribute('role', 'group');
+    row.setAttribute('aria-label', `Value proposition ${i + 1}`);
+
+    const painIn = document.createElement('input');
+    painIn.type = 'text';
+    painIn.className = 'vp-input';
+    painIn.placeholder = 'The pain / problem…';
+    painIn.value = vp.pain;
+    painIn.setAttribute('aria-label', `Pain ${i + 1}`);
+    painIn.oninput = () => { vpData[i].pain = painIn.value; };
+
+    const arrow = document.createElement('div');
+    arrow.className = 'vp-arrow';
+    arrow.setAttribute('aria-hidden', 'true');
+    arrow.textContent = '→';
+
+    const solIn = document.createElement('input');
+    solIn.type = 'text';
+    solIn.className = 'vp-input';
+    solIn.placeholder = 'Your solution / result…';
+    solIn.value = vp.solution;
+    solIn.setAttribute('aria-label', `Solution ${i + 1}`);
+    solIn.oninput = () => { vpData[i].solution = solIn.value; };
+
+    const del = document.createElement('button');
+    del.className = 'vp-del';
+    del.setAttribute('aria-label', `Remove value proposition ${i + 1}`);
+    del.textContent = '×';
+    del.onclick = () => { vpData.splice(i, 1); renderVPs(); };
+
+    row.append(painIn, arrow, solIn, del);
+    list.appendChild(row);
+  });
+
+  const count = document.getElementById('vpCount');
+  count.textContent = `${vpData.length} / 8 · ${vpData.length < 3 ? '⚠ Add at least 3' : '✓ Good coverage'}`;
+}
+
+function addVP() {
+  if (vpData.length >= 8) { showToast('Max Reached', 'Maximum 8 value propositions', 'warn'); return; }
+  vpData.push({ pain: '', solution: '' });
+  renderVPs();
+  // Focus the new pain input
+  const inputs = document.querySelectorAll('.vp-input');
+  if (inputs.length) inputs[inputs.length - 2].focus();
+}
+
+function generateVPs() {
+  showToast('AI Generation', 'Generating value propositions from your company description…', 'info');
+}
+
+/* ═══════════════════════════════════════════
+   AI PREVIEW
+═══════════════════════════════════════════ */
+const SAMPLE_PREVIEWS = [
+  `<span class="ai-hl">Noticed Stripe scaled its SDR team 3× last quarter</span> — most teams hit a wall around month 2 when ramp still hasn't clicked. We cut that to 5 days for Intercom. Worth a 15-min look?`,
+  `<span class="ai-hl">Your Series A announcement mentioned aggressive hiring targets for the sales org</span> — the teams I talk to lose 6-8 weeks getting new reps productive. We automated the enrichment and first-touch entirely. Happy to show you the setup.`,
+  `<span class="ai-hl">Vercel's growth pace is impressive</span> — at that scale, outreach quality usually doesn't keep up with headcount. Claude writes a unique first line for every lead. Reply rate went from 2% to 9% for a team identical to yours.`,
+];
+
+let previewIndex = 0;
+
+async function generatePreview() {
+  const btn = document.getElementById('previewBtn');
+  const body = document.getElementById('aiPreviewBody');
+  btn.textContent = '⏳ Generating…';
+  btn.classList.add('generating');
+  body.innerHTML = '<span class="typing" style="color:var(--text2);font-family:var(--font-m);font-size:12px">Claude is writing</span>';
+
+  await delay(1400);
+
+  const preview = SAMPLE_PREVIEWS[previewIndex % SAMPLE_PREVIEWS.length];
+  previewIndex++;
+
+  // Simulate typing reveal
+  body.innerHTML = '';
+  body.innerHTML = preview;
+  body.style.animation = 'none';
+  void body.offsetWidth;
+  body.style.animation = 'fadeSlide 0.4s ease';
+
+  btn.textContent = '✦ Regenerate';
+  btn.classList.remove('generating');
+}
+
+/* ═══════════════════════════════════════════
+   SEQUENCE
+═══════════════════════════════════════════ */
+const CHANNEL_LABELS = { email: '✉️ Email', linkedin: '💼 LinkedIn', task: '✅ Task' };
+const CHANNEL_CLASSES = { email: 'pill-email', linkedin: 'pill-linkedin', task: 'pill-task' };
+
+function renderSequence() {
+  const list = document.getElementById('seqList');
+  list.innerHTML = '';
+
+  seqData.forEach((step, i) => {
+    const item = document.createElement('div');
+    item.className = 'seq-item';
+    item.setAttribute('draggable', 'true');
+    item.setAttribute('role', 'listitem');
+    item.setAttribute('aria-label', `Step ${i + 1}: Day ${step.day} ${step.type}`);
+    item.dataset.index = i;
+
+    item.addEventListener('dragstart', onDragStart);
+    item.addEventListener('dragover',  onDragOver);
+    item.addEventListener('dragleave', onDragLeave);
+    item.addEventListener('drop',      onDrop);
+    item.addEventListener('dragend',   onDragEnd);
+
+    item.innerHTML = `
+      <div class="seq-dot" aria-hidden="true">${i + 1}</div>
+      <div class="seq-body" style="flex:1">
+        <div class="seq-row">
+          <span class="seq-day">Day ${step.day}</span>
+          <button class="seq-type-pill ${CHANNEL_CLASSES[step.type]}" 
+                  onclick="cycleChannel(${i})"
+                  aria-label="Channel: ${step.type}. Click to change.">
+            ${CHANNEL_LABELS[step.type]}
+          </button>
+          <span class="seq-drag-handle" aria-hidden="true" title="Drag to reorder">⣿</span>
+          <button class="seq-del" onclick="deleteStep(${i})" aria-label="Delete step ${i + 1}">×</button>
+        </div>
+        <input class="seq-subject" type="text"
+               value="${esc(step.subject)}"
+               placeholder="Subject line or task description…"
+               aria-label="Step ${i + 1} subject"
+               oninput="seqData[${i}].subject=this.value">
+        <div class="seq-meta">
+          <div class="seq-delay">
+            <span>Send after</span>
+            <input class="delay-input" type="number" min="0" max="90"
+                   value="${step.delay}"
+                   aria-label="Delay in days"
+                   onchange="seqData[${i}].delay=parseInt(this.value)||0;recalcDays()">
+            <span>days</span>
+          </div>
+        </div>
+      </div>`;
+
+    list.appendChild(item);
+  });
+
+  updateLaunchBar();
+}
+
+function cycleChannel(i) {
+  const channels = ['email', 'linkedin', 'task'];
+  const idx = channels.indexOf(seqData[i].type);
+  seqData[i].type = channels[(idx + 1) % channels.length];
+  renderSequence();
+}
+
+function deleteStep(i) {
+  if (seqData.length <= 1) { showToast('Cannot Delete', 'Sequence must have at least one step', 'warn'); return; }
+  seqData.splice(i, 1);
+  recalcDays();
+}
+
+function addSeqStep() {
+  const lastDay = seqData.length ? seqData[seqData.length - 1].day : 0;
+  seqData.push({ day: lastDay + 7, type: 'email', subject: '', delay: 7 });
+  renderSequence();
+  // Focus new subject input
+  const inputs = document.querySelectorAll('.seq-subject');
+  if (inputs.length) inputs[inputs.length - 1].focus();
+}
+
+function recalcDays() {
+  let day = 1;
+  seqData.forEach((step, i) => {
+    if (i === 0) { step.day = 1; day = 1; }
+    else { day += step.delay; step.day = day; }
+  });
+  renderSequence();
+}
+
+/* Drag-and-drop reorder */
+let dragSrcIdx = null;
+
+function onDragStart(e) {
+  dragSrcIdx = parseInt(this.dataset.index);
+  this.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+}
+
+function onDragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  this.classList.add('drag-over');
+}
+
+function onDragLeave() { this.classList.remove('drag-over'); }
+
+function onDrop(e) {
+  e.preventDefault();
+  this.classList.remove('drag-over');
+  const targetIdx = parseInt(this.dataset.index);
+  if (dragSrcIdx === null || dragSrcIdx === targetIdx) return;
+  const moved = seqData.splice(dragSrcIdx, 1)[0];
+  seqData.splice(targetIdx, 0, moved);
+  recalcDays();
+}
+
+function onDragEnd() {
+  document.querySelectorAll('.seq-item').forEach(el => el.classList.remove('dragging', 'drag-over'));
+  dragSrcIdx = null;
+}
+
+/* ═══════════════════════════════════════════
+   A/B TOGGLE
+═══════════════════════════════════════════ */
+function toggleAB() {
+  const on = document.getElementById('abToggle').checked;
+  document.getElementById('abBody').style.display = on ? 'grid' : 'none';
+  document.getElementById('abToggleLabel').textContent = on ? 'On' : 'Off';
+  if (on) showToast('A/B Test Enabled', 'Leads will be split 50/50 between variants A and B', 'info');
+}
+
+/* ═══════════════════════════════════════════
+   LEADS
+═══════════════════════════════════════════ */
+function handleDragOver(e) { e.preventDefault(); document.getElementById('uploadZone').classList.add('dragover'); }
+function handleDragLeave() { document.getElementById('uploadZone').classList.remove('dragover'); }
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('uploadZone').classList.remove('dragover');
+  const files = e.dataTransfer?.files;
+  if (files?.length) processFile(files[0]);
+}
+
+function handleFileSelect(e) {
+  if (e.target.files?.length) processFile(e.target.files[0]);
+}
+
+function processFile(file) {
+  showToast('File Received', `Processing ${file.name}…`, 'info');
+  // Simulate parse
+  setTimeout(() => {
+    const total = Math.floor(Math.random() * 200) + 200;
+    const removed = Math.floor(total * 0.05);
+    const ready = total - removed;
+    const icpMatch = Math.floor(ready * (0.6 + Math.random() * 0.25));
+    setLeadsStats(total, removed, ready, icpMatch);
+  }, 1000);
+}
+
+function mockImport(source) {
+  showToast('Importing', `Connecting to ${source === 'apollo' ? 'Apollo.io' : 'LinkedIn Sales Navigator'}…`, 'info');
+  setTimeout(() => {
+    const total = Math.floor(Math.random() * 300) + 150;
+    const removed = Math.floor(total * 0.04);
+    const ready = total - removed;
+    const icpMatch = Math.floor(ready * (0.65 + Math.random() * 0.2));
+    setLeadsStats(total, removed, ready, icpMatch);
+    showToast('Import Complete', `${ready} leads ready for enrichment`, 'success');
+  }, 1600);
+}
+
+function setLeadsStats(total, removed, ready, icpMatch) {
+  leadsData = { total, removed, ready, icpMatch };
+  document.getElementById('statTotal').textContent   = total;
+  document.getElementById('statRemoved').textContent = removed;
+  document.getElementById('statReady').textContent   = ready;
+  document.getElementById('statIcpMatch').textContent= icpMatch;
+  document.getElementById('leadsStatsCard').style.display = '';
+  updateLaunchBar();
+}
+
+function showPasteModal() {
+  const sec = document.getElementById('pasteSection');
+  sec.style.display = sec.style.display === 'none' ? '' : 'none';
+  if (sec.style.display !== 'none') document.getElementById('pasteArea').focus();
+}
+
+function processPaste() {
+  const text = document.getElementById('pasteArea').value.trim();
+  if (!text) { showToast('Empty', 'Paste at least one domain', 'warn'); return; }
+  const domains = text.split('\n').map(s => s.trim()).filter(Boolean);
+  const total = domains.length;
+  const removed = 0;
+  const ready = total;
+  const icpMatch = Math.floor(total * 0.7);
+  setLeadsStats(total, removed, ready, icpMatch);
+  document.getElementById('pasteSection').style.display = 'none';
+  showToast('Processed', `${total} domains queued for enrichment`, 'success');
+}
+
+/* ═══════════════════════════════════════════
+   REVIEW
+═══════════════════════════════════════════ */
+function buildReview() {
+  const el = document.getElementById('reviewContent');
+  const name = document.getElementById('campaignName').value.trim() || 'Unnamed Campaign';
+  const allTitles = [
+    ...document.querySelectorAll('#titlesWrap .tag span'),
+  ].map(t => t.textContent);
+  const allIndustries = [
+    ...document.querySelectorAll('#industryWrap .tag span'),
+  ].map(t => t.textContent);
+
+  const checks = [
+    { ok: !!name,               label: `Campaign: ${esc(name)}` },
+    { ok: allIndustries.length, label: `${allIndustries.length} target industries` },
+    { ok: allTitles.length,     label: `${allTitles.length} target titles defined` },
+    { ok: vpData.filter(v=>v.pain).length >= 3, label: `${vpData.filter(v=>v.pain).length} value propositions (3+ recommended)` },
+    { ok: seqData.length >= 3,  label: `${seqData.length}-step sequence configured` },
+    { ok: leadsData.ready > 0,  label: leadsData.ready > 0 ? `${leadsData.ready} leads ready to enrich` : 'No leads loaded yet' },
+    { ok: true,                 label: `Tone: ${selectedToneVal}` },
+    { ok: document.getElementById('ctaUrl').value, label: document.getElementById('ctaUrl').value || '⚠ No CTA URL set' },
+  ];
+
+  const checkHTML = checks.map(c => `
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px;color:${c.ok ? 'var(--green)' : 'var(--amber)'}">
+      <span style="font-size:14px">${c.ok ? '✓' : '⚠'}</span>
+      <span>${c.label}</span>
+    </div>`).join('');
+
+  el.innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><span class="card-title-icon">✅</span> Pre-Launch Checklist</div>
+      </div>
+      <div class="card-body">${checkHTML}</div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="card-header">
+        <div class="card-title"><span class="card-title-icon">⚙️</span> What Happens When You Launch</div>
+      </div>
+      <div class="card-body" style="display:flex;flex-direction:column;gap:12px;font-size:13px;color:var(--text2);line-height:1.6">
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <span style="color:var(--gold);font-family:var(--font-m);font-size:11px;flex-shrink:0;margin-top:2px">01</span>
+          <span><strong style="color:var(--text)">Clay enrichment</strong> — Soldiro enriches each lead's company with firmographic data, tech stack, and recent signals.</span>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <span style="color:var(--gold);font-family:var(--font-m);font-size:11px;flex-shrink:0;margin-top:2px">02</span>
+          <span><strong style="color:var(--text)">Apollo person search</strong> — Finds the highest-priority contact matching your title list at each company.</span>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <span style="color:var(--gold);font-family:var(--font-m);font-size:11px;flex-shrink:0;margin-top:2px">03</span>
+          <span><strong style="color:var(--text)">Hunter verification</strong> — Every email is verified for deliverability before entering the sequence.</span>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <span style="color:var(--gold);font-family:var(--font-m);font-size:11px;flex-shrink:0;margin-top:2px">04</span>
+          <span><strong style="color:var(--text)">Claude personalisation</strong> — A unique first line is written for each prospect using your tone + ICP signal.</span>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <span style="color:var(--gold);font-family:var(--font-m);font-size:11px;flex-shrink:0;margin-top:2px">05</span>
+          <span><strong style="color:var(--text)">Instantly sequence</strong> — Leads enter your ${seqData.length}-step sequence. Replies are routed back to your dashboard.</span>
+        </div>
+      </div>
+    </div>`;
+}
+
+/* ═══════════════════════════════════════════
+   LAUNCH BAR
+═══════════════════════════════════════════ */
+function updateLaunchBar() {
+  const name = document.getElementById('campaignName').value.trim() || '—';
+  document.getElementById('launchCampaignName').textContent = name;
+  document.getElementById('launchLeadCount').textContent   = leadsData.ready > 0 ? leadsData.ready + ' leads' : '—';
+  document.getElementById('launchSeqSteps').textContent    = seqData.length + ' steps';
+}
+
+/* ═══════════════════════════════════════════
+   SAVE / LAUNCH
+═══════════════════════════════════════════ */
+function saveDraft() {
+  showToast('Draft Saved', 'Campaign saved — you can resume any time', 'success');
+}
+
+function launchCampaign() {
+  if (leadsData.ready === 0) {
+    showToast('No Leads', 'Add leads before launching', 'warn');
+    switchTab(3);
+    return;
+  }
+  showToast('🚀 Launching', `${leadsData.ready} leads entering enrichment pipeline…`, 'success');
+  setTimeout(() => showToast('Pipeline Active', 'First emails will send within 2–4 hours', 'info'), 2000);
+}
+
+/* ═══════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════ */
+const TOAST_ICONS = { success: '✅', info: 'ℹ️', warn: '⚠️', error: '❌' };
+
+function showToast(title, message, type = 'success') {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+
+  const ico = document.createElement('div');
+  ico.className = 'toast-ico';
+  ico.setAttribute('aria-hidden','true');
+  ico.textContent = TOAST_ICONS[type] || '●';
+
+  const body = document.createElement('div');
+  const t = document.createElement('div'); t.className = 'toast-ttl'; t.textContent = title;
+  const m = document.createElement('div'); m.className = 'toast-msg'; m.textContent = message;
+  body.append(t, m);
+  toast.append(ico, body);
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.add('leaving');
+    toast.addEventListener('animationend', () => toast.remove(), { once: true });
+  }, 3200);
+}
+
+/* ═══════════════════════════════════════════
+   UTILS
+═══════════════════════════════════════════ */
+function esc(s) {
+  return String(s)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#39;');
+}
+
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+/* ═══════════════════════════════════════════
+   KEYBOARD SHORTCUTS
+═══════════════════════════════════════════ */
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); saveDraft(); }
+});
+
+/* ═══════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════ */
+renderVPs();
+renderSequence();
+document.getElementById('campaignName').addEventListener('input', updateLaunchBar);
+</script>
+</body>
+</html>

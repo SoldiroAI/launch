@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Soldiro AI — Analytics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;800;900&family=Sora:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:        #07070a;
+      --surface:   #0d0d16;
+      --surface2:  #111119;
+      --surface3:  #181825;
+      --surface4:  #1e1e2e;
+      --border:    #1e1e2e;
+      --border2:   #2a2a3a;
+      --border3:   #38384e;
+      --gold:      #e8b84b;
+      --gold2:     #c49030;
+      --gold3:     #f5d07a;
+      --goldfade:  rgba(232,184,75,0.07);
+      --goldring:  rgba(232,184,75,0.18);
+      --red:       #e84b6a;
+      --redfade:   rgba(232,75,106,0.09);
+      --green:     #2ecc8a;
+      --greenfade: rgba(46,204,138,0.09);
+      --blue:      #4a8fff;
+      --bluefade:  rgba(74,143,255,0.09);
+      --purple:    #9b6dff;
+      --purpfade:  rgba(155,109,255,0.09);
+      --amber:     #ffb347;
+      --amberfade: rgba(255,179,71,0.09);
+      --text:      #eae6f5;
+      --text2:     #a9a1c2;
+      --text3:     #6a6380;
+      --muted:     #43405c;
+      --font-d:    'Barlow Condensed', sans-serif;
+      --font-b:    'Sora', sans-serif;
+      --font-m:    'JetBrains Mono', monospace;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-b);
+      font-size: 14px;
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    /* ══ SHELL ══ */
+    .shell {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      grid-template-rows: 52px 1fr;
+      height: 100vh;
+    }
+
+    /* ══ TOPNAV ══ */
+    .topnav {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      z-index: 20;
+      flex-shrink: 0;
+    }
+
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand-mark {
+      background: var(--gold); color: var(--bg);
+      font-family: var(--font-d); font-weight: 800; font-size: 14px;
+      width: 26px; height: 26px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 5px;
+    }
+    .brand-name { font-family: var(--font-d); font-size: 16px; font-weight: 700; }
+
+    .topnav-tabs { display: flex; gap: 4px; }
+    .tnav-tab {
+      padding: 6px 14px;
+      font-family: var(--font-m); font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
+      color: var(--text3); background: transparent; border: 1px solid transparent;
+      border-radius: 6px; cursor: pointer; transition: all 0.15s;
+    }
+    .tnav-tab:hover { color: var(--text2); border-color: var(--border2); }
+    .tnav-tab.active { color: var(--gold); border-color: var(--goldring); background: var(--goldfade); }
+    .tnav-tab:focus-visible { outline: 2px solid var(--gold2); outline-offset: 2px; }
+
+    .topnav-right { display: flex; align-items: center; gap: 10px; }
+
+    .range-select {
+      background: var(--surface3); border: 1px solid var(--border2);
+      color: var(--text2); font-family: var(--font-m); font-size: 10px;
+      letter-spacing: 0.5px; padding: 6px 12px; border-radius: 6px;
+      cursor: pointer; outline: none; transition: border-color 0.15s;
+      appearance: none; -webkit-appearance: none;
+    }
+    .range-select:focus { border-color: var(--gold2); }
+    .range-select option { background: var(--surface2); }
+
+    .export-btn {
+      display: flex; align-items: center; gap: 6px;
+      padding: 6px 14px;
+      background: transparent; border: 1px solid var(--border2);
+      color: var(--text2); font-family: var(--font-m); font-size: 10px;
+      letter-spacing: 0.5px; text-transform: uppercase;
+      border-radius: 6px; cursor: pointer; transition: all 0.15s;
+    }
+    .export-btn:hover { border-color: var(--gold2); color: var(--gold); }
+    .export-btn:focus-visible { outline: 2px solid var(--gold2); outline-offset: 2px; }
+
+    /* ══ SIDEBAR ══ */
+    .sidebar {
+      background: var(--surface); border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; overflow-y: auto;
+      padding: 20px 0;
+    }
+
+    .sb-section { margin-bottom: 4px; }
+    .sb-label {
+      font-family: var(--font-m); font-size: 9px; letter-spacing: 2.5px;
+      text-transform: uppercase; color: var(--text3); padding: 0 16px 8px;
+    }
+
+    .sb-item {
+      display: flex; align-items: center; gap: 9px;
+      width: 100%; padding: 8px 16px;
+      background: transparent; border: none; border-left: 3px solid transparent;
+      font-family: var(--font-b); font-size: 12px; color: var(--text2);
+      cursor: pointer; text-align: left; transition: all 0.15s;
+    }
+    .sb-item:hover { background: var(--goldfade); color: var(--text); }
+    .sb-item.active { background: var(--goldfade); color: var(--gold); border-left-color: var(--gold); }
+    .sb-item:focus-visible { outline: 2px solid var(--gold2); outline-offset: -2px; }
+
+    .sb-ic { font-size: 14px; width: 18px; text-align: center; flex-shrink: 0; }
+    .sb-divider { height: 1px; background: var(--border); margin: 10px 16px; }
+
+    .campaign-status {
+      margin-left: auto;
+      font-family: var(--font-m); font-size: 8px; padding: 1px 5px;
+      border-radius: 3px; letter-spacing: 0.5px;
+    }
+    .cs-live { background: var(--greenfade); color: var(--green); border: 1px solid rgba(46,204,138,0.2); }
+    .cs-pause { background: var(--amberfade); color: var(--amber); border: 1px solid rgba(255,179,71,0.2); }
+
+    /* ══ MAIN CONTENT ══ */
+    .main { overflow-y: auto; padding: 28px 32px; display: flex; flex-direction: column; gap: 24px; }
+
+    /* Page header */
+    .page-header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+    }
+    .page-eyebrow {
+      font-family: var(--font-m); font-size: 10px; letter-spacing: 3px;
+      color: var(--gold2); text-transform: uppercase; margin-bottom: 8px;
+    }
+    .page-title {
+      font-family: var(--font-d); font-size: clamp(28px, 2.8vw, 40px);
+      font-weight: 800; letter-spacing: 0.3px; line-height: 1;
+    }
+    .page-title em { font-style: normal; color: var(--gold); }
+    .page-meta {
+      font-family: var(--font-m); font-size: 11px; color: var(--text3);
+      margin-top: 6px; display: flex; align-items: center; gap: 10px;
+    }
+    .meta-dot { color: var(--muted); }
+
+    .header-actions { display: flex; align-items: center; gap: 8px; }
+
+    .ai-reco-btn {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 20px;
+      background: var(--goldfade); border: 1px solid var(--goldring);
+      color: var(--gold); font-family: var(--font-m); font-size: 11px;
+      letter-spacing: 1px; text-transform: uppercase;
+      border-radius: 8px; cursor: pointer; transition: all 0.15s;
+    }
+    .ai-reco-btn:hover { background: var(--goldring); transform: translateY(-1px); }
+    .ai-reco-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+    /* ══ METRIC CARDS ROW ══ */
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .metric-card {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 10px; padding: 18px 20px;
+      transition: all 0.2s; position: relative; overflow: hidden;
+    }
+    .metric-card::after {
+      content: ''; position: absolute;
+      top: 0; right: 0; width: 3px; height: 100%;
+      opacity: 0; transition: opacity 0.2s;
+      border-radius: 0 10px 10px 0;
+    }
+    .metric-card:hover { border-color: var(--border3); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+    .metric-card:hover::after { opacity: 1; }
+
+    .mc-blue::after   { background: var(--blue); }
+    .mc-green::after  { background: var(--green); }
+    .mc-purple::after { background: var(--purple); }
+    .mc-gold::after   { background: var(--gold); }
+
+    .mc-label {
+      font-family: var(--font-m); font-size: 9px; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--text3); margin-bottom: 10px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .mc-icon { font-size: 15px; }
+    .mc-value {
+      font-family: var(--font-d); font-size: 40px; font-weight: 800;
+      line-height: 1; margin-bottom: 6px;
+      transition: color 0.3s;
+    }
+    .mc-blue   .mc-value { color: var(--blue); }
+    .mc-green  .mc-value { color: var(--green); }
+    .mc-purple .mc-value { color: var(--purple); }
+    .mc-gold   .mc-value { color: var(--gold); }
+
+    .mc-delta {
+      display: flex; align-items: center; gap: 5px;
+      font-family: var(--font-m); font-size: 10px; color: var(--text3);
+    }
+    .delta-up   { color: var(--green); }
+    .delta-down { color: var(--red); }
+
+    /* ══ TWO-COL CHART ROW ══ */
+    .chart-row { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
+    .chart-row-equal { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    /* ══ CARD SHELL ══ */
+    .card {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 10px; overflow: hidden;
+    }
+    .card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 18px 12px;
+      background: var(--surface3); border-bottom: 1px solid var(--border);
+    }
+    .card-title {
+      display: flex; align-items: center; gap: 8px;
+      font-family: var(--font-d); font-size: 15px; font-weight: 700;
+      letter-spacing: 0.3px; color: var(--text);
+    }
+    .ct-icon { font-size: 15px; }
+    .card-body { padding: 20px; }
+
+    /* Chart legend */
+    .chart-legend {
+      display: flex; align-items: center; gap: 14px;
+      flex-wrap: wrap;
+    }
+    .legend-item {
+      display: flex; align-items: center; gap: 5px;
+      font-family: var(--font-m); font-size: 10px; color: var(--text3);
+      cursor: pointer; transition: color 0.15s;
+      background: none; border: none; padding: 0;
+    }
+    .legend-item:hover { color: var(--text2); }
+    .legend-item.hidden { opacity: 0.35; }
+    .legend-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+    }
+
+    /* ══ SVG CHART CANVAS ══ */
+    .chart-svg-wrap {
+      width: 100%;
+      position: relative;
+    }
+
+    .chart-svg-wrap svg {
+      width: 100%; overflow: visible;
+    }
+
+    /* Tooltip */
+    .chart-tooltip {
+      position: absolute;
+      background: var(--surface3);
+      border: 1px solid var(--border2);
+      border-radius: 7px;
+      padding: 9px 12px;
+      font-family: var(--font-m);
+      font-size: 11px;
+      color: var(--text);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s;
+      z-index: 100;
+      white-space: nowrap;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+    }
+    .chart-tooltip.visible { opacity: 1; }
+    .tt-label { color: var(--text3); font-size: 10px; margin-bottom: 5px; }
+    .tt-row { display: flex; align-items: center; gap: 6px; margin: 2px 0; }
+    .tt-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .tt-val { font-weight: 500; }
+
+    /* ══ FUNNEL ══ */
+    .funnel-wrap {
+      display: flex; flex-direction: column; gap: 0;
+      align-items: stretch;
+    }
+
+    .funnel-step {
+      position: relative;
+      cursor: default;
+    }
+
+    .funnel-bar-row {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 4px;
+    }
+
+    .funnel-label {
+      font-family: var(--font-m); font-size: 10px; letter-spacing: 0.5px;
+      text-transform: uppercase; color: var(--text3);
+      width: 76px; flex-shrink: 0; text-align: right;
+    }
+
+    .funnel-track {
+      flex: 1; height: 32px;
+      background: var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .funnel-fill {
+      height: 100%;
+      border-radius: 4px;
+      display: flex; align-items: center; padding: 0 10px;
+      transition: width 1s cubic-bezier(0.34, 1.2, 0.64, 1);
+      width: 0;
+    }
+
+    .funnel-count {
+      font-family: var(--font-d); font-size: 16px; font-weight: 700;
+      color: rgba(255,255,255,0.9); white-space: nowrap;
+    }
+
+    .funnel-pct {
+      font-family: var(--font-m); font-size: 10px;
+      width: 44px; flex-shrink: 0; text-align: right; color: var(--text3);
+    }
+
+    .funnel-drop {
+      margin-left: 88px;
+      font-family: var(--font-m); font-size: 9px; color: var(--text3);
+      margin-bottom: 8px; display: flex; align-items: center; gap: 5px;
+    }
+
+    .funnel-drop-arrow { color: var(--red); }
+
+    /* ══ ROI CALCULATOR ══ */
+    .roi-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+      align-items: start;
+    }
+
+    .roi-inputs { display: flex; flex-direction: column; gap: 12px; }
+
+    .roi-field { display: flex; flex-direction: column; gap: 5px; }
+    .roi-label {
+      font-family: var(--font-m); font-size: 9px; letter-spacing: 1.5px;
+      text-transform: uppercase; color: var(--text3);
+    }
+    .roi-input-wrap { position: relative; }
+    .roi-prefix {
+      position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+      font-family: var(--font-m); font-size: 12px; color: var(--text3);
+      pointer-events: none;
+    }
+    .roi-input {
+      width: 100%; background: var(--bg); border: 1px solid var(--border2);
+      border-radius: 6px; padding: 9px 10px 9px 24px;
+      color: var(--text); font-family: var(--font-m); font-size: 13px;
+      outline: none; transition: border-color 0.15s;
+      -moz-appearance: textfield;
+    }
+    .roi-input::-webkit-inner-spin-button,
+    .roi-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+    .roi-input:focus { border-color: var(--gold2); box-shadow: 0 0 0 3px rgba(232,184,75,0.06); }
+
+    .roi-slider {
+      width: 100%;
+      accent-color: var(--gold);
+      cursor: pointer;
+      margin-top: 4px;
+    }
+
+    .roi-output {
+      background: var(--surface3); border: 1px solid var(--border);
+      border-radius: 8px; padding: 18px;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+
+    .roi-metric {
+      display: flex; flex-direction: column; gap: 2px;
+      padding-bottom: 12px; border-bottom: 1px solid var(--border);
+    }
+    .roi-metric:last-child { border-bottom: none; padding-bottom: 0; }
+
+    .roi-metric-label {
+      font-family: var(--font-m); font-size: 9px; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--text3);
+    }
+    .roi-metric-value {
+      font-family: var(--font-d); font-size: 32px; font-weight: 800; line-height: 1.1;
+    }
+    .roi-metric-sub { font-family: var(--font-m); font-size: 10px; color: var(--text3); }
+    .roi-vs-sdr {
+      display: flex; align-items: center; gap: 6px;
+      font-family: var(--font-m); font-size: 10px;
+      color: var(--green); margin-top: 4px;
+    }
+
+    /* ══ TEMPLATE TABLE ══ */
+    .template-table { width: 100%; border-collapse: collapse; }
+    .template-table th {
+      font-family: var(--font-m); font-size: 9px; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--text3);
+      padding: 0 12px 10px; text-align: left; font-weight: 400;
+      border-bottom: 1px solid var(--border);
+    }
+    .template-table td {
+      padding: 12px; border-bottom: 1px solid var(--border);
+      font-size: 12px; vertical-align: middle;
+    }
+    .template-table tr:last-child td { border-bottom: none; }
+    .template-table tr:hover td { background: var(--goldfade); }
+
+    .tpl-name { font-family: var(--font-d); font-size: 14px; font-weight: 700; color: var(--text); }
+    .tpl-tone { font-family: var(--font-m); font-size: 10px; color: var(--text3); }
+
+    .rate-bar-wrap { display: flex; align-items: center; gap: 8px; }
+    .rate-bar {
+      flex: 1; height: 5px; background: var(--border2);
+      border-radius: 3px; overflow: hidden; min-width: 60px;
+    }
+    .rate-fill {
+      height: 100%; border-radius: 3px;
+      transition: width 1.2s cubic-bezier(0.34, 1.2, 0.64, 1);
+      width: 0;
+    }
+    .rate-val { font-family: var(--font-m); font-size: 11px; min-width: 36px; }
+
+    .tpl-status {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-family: var(--font-m); font-size: 9px; padding: 3px 8px;
+      border-radius: 4px; border: 1px solid; letter-spacing: 0.5px;
+    }
+    .status-winner { background: var(--greenfade); color: var(--green); border-color: rgba(46,204,138,0.25); }
+    .status-test   { background: var(--amberfade); color: var(--amber); border-color: rgba(255,179,71,0.25); }
+    .status-pause  { background: var(--redfade);   color: var(--red);   border-color: rgba(232,75,106,0.25); }
+    .status-new    { background: var(--bluefade);  color: var(--blue);  border-color: rgba(74,143,255,0.25); }
+
+    .tpl-action-btn {
+      padding: 4px 10px; border: 1px solid var(--border2);
+      background: transparent; color: var(--text2);
+      font-family: var(--font-m); font-size: 9px; letter-spacing: 0.5px;
+      text-transform: uppercase; border-radius: 5px; cursor: pointer;
+      transition: all 0.12s; white-space: nowrap;
+    }
+    .tpl-action-btn:hover { border-color: var(--gold2); color: var(--gold); }
+
+    /* ══ AI RECOMMENDATIONS PANEL ══ */
+    .ai-panel {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 10px; overflow: hidden;
+    }
+
+    .ai-panel-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 18px;
+      background: linear-gradient(90deg, var(--goldfade), transparent);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .ai-panel-title {
+      display: flex; align-items: center; gap: 9px;
+      font-family: var(--font-d); font-size: 16px; font-weight: 700; color: var(--text);
+    }
+
+    .ai-badge {
+      font-family: var(--font-m); font-size: 8px; padding: 2px 7px;
+      border-radius: 3px; letter-spacing: 1px; text-transform: uppercase;
+      background: var(--goldring); border: 1px solid rgba(232,184,75,0.3);
+      color: var(--gold2);
+    }
+
+    .ai-gen-btn {
+      padding: 6px 14px;
+      background: var(--gold); border: none;
+      color: var(--bg); font-family: var(--font-m); font-size: 10px;
+      font-weight: 500; letter-spacing: 1px; text-transform: uppercase;
+      border-radius: 6px; cursor: pointer; transition: all 0.15s;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .ai-gen-btn:hover { background: var(--gold3); transform: translateY(-1px); }
+    .ai-gen-btn:disabled { opacity: 0.5; pointer-events: none; }
+    .ai-gen-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+    .ai-reco-list { padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+
+    .reco-card {
+      background: var(--surface3); border: 1px solid var(--border2);
+      border-radius: 8px; padding: 14px 16px;
+      display: flex; gap: 12px; align-items: flex-start;
+      animation: recoIn 0.3s ease both;
+    }
+
+    @keyframes recoIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    .reco-icon {
+      width: 32px; height: 32px; border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; flex-shrink: 0;
+    }
+
+    .reco-body { flex: 1; }
+
+    .reco-header {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 5px;
+    }
+
+    .reco-type {
+      font-family: var(--font-m); font-size: 9px; letter-spacing: 1px;
+      text-transform: uppercase; padding: 2px 6px; border-radius: 3px; border: 1px solid;
+    }
+    .rt-urgent { background: var(--redfade); color: var(--red); border-color: rgba(232,75,106,0.25); }
+    .rt-optimize { background: var(--amberfade); color: var(--amber); border-color: rgba(255,179,71,0.25); }
+    .rt-opportunity { background: var(--greenfade); color: var(--green); border-color: rgba(46,204,138,0.25); }
+    .rt-insight { background: var(--bluefade); color: var(--blue); border-color: rgba(74,143,255,0.25); }
+
+    .reco-title { font-family: var(--font-d); font-size: 15px; font-weight: 700; color: var(--text); }
+    .reco-text { font-size: 12px; color: var(--text2); line-height: 1.6; }
+
+    .reco-actions { display: flex; gap: 6px; margin-top: 10px; }
+
+    .reco-act {
+      padding: 5px 12px;
+      font-family: var(--font-m); font-size: 9px; letter-spacing: 0.5px; text-transform: uppercase;
+      border-radius: 5px; cursor: pointer; transition: all 0.12s; border: 1px solid;
+    }
+    .reco-act.primary { background: var(--gold); border-color: var(--gold); color: var(--bg); }
+    .reco-act.primary:hover { background: var(--gold3); }
+    .reco-act.secondary { background: transparent; border-color: var(--border2); color: var(--text2); }
+    .reco-act.secondary:hover { border-color: var(--gold2); color: var(--gold); }
+    .reco-act:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+    /* Impact badge */
+    .reco-impact {
+      margin-left: auto;
+      font-family: var(--font-m); font-size: 10px;
+      color: var(--green); display: flex; align-items: center; gap: 4px;
+    }
+
+    /* Empty state */
+    .ai-empty {
+      padding: 36px;
+      text-align: center;
+      display: flex; flex-direction: column; align-items: center; gap: 12px;
+    }
+    .ai-empty-icon { font-size: 32px; opacity: 0.4; }
+    .ai-empty-text { font-family: var(--font-m); font-size: 11px; color: var(--text3); letter-spacing: 1px; }
+
+    /* Thinking animation */
+    .thinking-row {
+      display: flex; align-items: center; gap: 8px; padding: 16px 18px;
+      font-family: var(--font-m); font-size: 11px; color: var(--text3);
+    }
+    .dots span {
+      display: inline-block; width: 5px; height: 5px; border-radius: 50%;
+      background: var(--gold2); margin: 0 1px;
+      animation: dot-pulse 1.2s ease-in-out infinite;
+    }
+    .dots span:nth-child(2) { animation-delay: 0.15s; }
+    .dots span:nth-child(3) { animation-delay: 0.3s; }
+    @keyframes dot-pulse { 0%,60%,100% { opacity: 0.2; transform: scale(0.8); } 30% { opacity: 1; transform: scale(1); } }
+
+    /* ══ TOAST ══ */
+    .toast-container {
+      position: fixed; bottom: 20px; right: 20px; z-index: 9999;
+      display: flex; flex-direction: column; gap: 8px; pointer-events: none;
+    }
+    .toast {
+      background: var(--surface3); border: 1px solid var(--border2);
+      border-left: 3px solid var(--green); border-radius: 8px;
+      padding: 10px 14px; display: flex; align-items: flex-start; gap: 9px;
+      min-width: 240px; max-width: 320px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+      pointer-events: all;
+      animation: toastIn 0.3s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    .toast.leaving { animation: toastOut 0.25s ease forwards; }
+    .toast.warn  { border-left-color: var(--amber); }
+    .toast.info  { border-left-color: var(--blue); }
+    @keyframes toastIn  { from { opacity:0; transform:translateX(14px); } to { opacity:1; transform:none; } }
+    @keyframes toastOut { from { opacity:1; } to { opacity:0; transform:translateX(14px); } }
+    .t-ico  { font-size: 13px; flex-shrink: 0; }
+    .t-ttl  { font-size: 11px; font-weight: 600; color: var(--text); }
+    .t-msg  { font-size: 10px; color: var(--text2); margin-top: 1px; }
+
+    /* ══ SCROLLBAR ══ */
+    ::-webkit-scrollbar { width: 3px; height: 3px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--border3); }
+
+    /* ══ RESPONSIVE ══ */
+    @media (max-width: 1100px) {
+      .metrics-row { grid-template-columns: repeat(2, 1fr); }
+      .chart-row { grid-template-columns: 1fr; }
+      .chart-row-equal { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 860px) {
+      .shell { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .roi-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- ══ TOPNAV ══ -->
+  <nav class="topnav" aria-label="Global navigation">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">S</div>
+      <span class="brand-name">Soldiro<span style="color:var(--gold)">AI</span></span>
+    </div>
+    <div class="topnav-tabs" role="tablist">
+      <button class="tnav-tab" role="tab">Dashboard</button>
+      <button class="tnav-tab" role="tab">Campaigns</button>
+      <button class="tnav-tab" role="tab">Inbox</button>
+      <button class="tnav-tab" role="tab">Meetings</button>
+      <button class="tnav-tab active" role="tab" aria-selected="true">Analytics</button>
+    </div>
+    <div class="topnav-right">
+      <select class="range-select" id="rangeSelect" onchange="changeRange(this.value)" aria-label="Select date range">
+        <option value="7">Last 7 days</option>
+        <option value="30" selected>Last 30 days</option>
+        <option value="90">Last 90 days</option>
+        <option value="180">Last 6 months</option>
+      </select>
+      <button class="export-btn" onclick="exportReport('pdf')" aria-label="Export PDF report">
+        <span aria-hidden="true">📋</span> Export PDF
+      </button>
+      <button class="export-btn" onclick="exportReport('csv')" aria-label="Export CSV data">
+        <span aria-hidden="true">📥</span> CSV
+      </button>
+    </div>
+  </nav>
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar" aria-label="Analytics navigation">
+    <div class="sb-section">
+      <div class="sb-label">Overview</div>
+      <button class="sb-item active"><span class="sb-ic" aria-hidden="true">📈</span> Performance</button>
+      <button class="sb-item"><span class="sb-ic" aria-hidden="true">🎯</span> Funnel</button>
+      <button class="sb-item"><span class="sb-ic" aria-hidden="true">💰</span> ROI</button>
+      <button class="sb-item"><span class="sb-ic" aria-hidden="true">🧪</span> A/B Tests</button>
+    </div>
+    <div class="sb-divider" role="separator"></div>
+    <div class="sb-section">
+      <div class="sb-label">By Campaign</div>
+      <button class="sb-item">
+        <span class="sb-ic" aria-hidden="true">🎯</span> Q1 Enterprise
+        <span class="campaign-status cs-live">LIVE</span>
+      </button>
+      <button class="sb-item">
+        <span class="sb-ic" aria-hidden="true">🎯</span> SaaS Founders
+        <span class="campaign-status cs-live">LIVE</span>
+      </button>
+      <button class="sb-item">
+        <span class="sb-ic" aria-hidden="true">🎯</span> Fintech DMs
+        <span class="campaign-status cs-live">LIVE</span>
+      </button>
+      <button class="sb-item">
+        <span class="sb-ic" aria-hidden="true">🎯</span> EMEA Launch
+        <span class="campaign-status cs-pause">DRAFT</span>
+      </button>
+    </div>
+    <div class="sb-divider" role="separator"></div>
+    <div class="sb-section">
+      <div class="sb-label">Reports</div>
+      <button class="sb-item"><span class="sb-ic" aria-hidden="true">📄</span> Weekly Digest</button>
+      <button class="sb-item"><span class="sb-ic" aria-hidden="true">📤</span> Client Report</button>
+    </div>
+  </aside>
+
+  <!-- ══ MAIN ══ -->
+  <main class="main" id="main" role="main">
+
+    <!-- Page header -->
+    <div class="page-header">
+      <div>
+        <div class="page-eyebrow">Analytics · Acme Corporation</div>
+        <h1 class="page-title">Performance <em>Report</em></h1>
+        <div class="page-meta">
+          <span id="dateRangeLabel">Jan 27 – Feb 26, 2026</span>
+          <span class="meta-dot" aria-hidden="true">·</span>
+          <span>3 active campaigns</span>
+          <span class="meta-dot" aria-hidden="true">·</span>
+          <span style="color:var(--green)">↑ 23% vs prior period</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="ai-reco-btn" onclick="loadRecommendations()" id="recoBtn" aria-label="Generate AI recommendations">
+          <span aria-hidden="true">✦</span> AI Recommendations
+        </button>
+      </div>
+    </div>
+
+    <!-- ══ METRIC CARDS ══ -->
+    <div class="metrics-row" role="region" aria-label="Key metrics">
+      <div class="metric-card mc-blue" role="figure" aria-label="Leads processed: 847">
+        <div class="mc-label">Leads Processed <span class="mc-icon" aria-hidden="true">👥</span></div>
+        <div class="mc-value" id="mv-leads">847</div>
+        <div class="mc-delta"><span class="delta-up">▲ 18%</span> vs prior period</div>
+      </div>
+      <div class="metric-card mc-green" role="figure" aria-label="Replies received: 42">
+        <div class="mc-label">Replies <span class="mc-icon" aria-hidden="true">💬</span></div>
+        <div class="mc-value" id="mv-replies">42</div>
+        <div class="mc-delta"><span class="delta-up">▲ 31%</span> vs prior period</div>
+      </div>
+      <div class="metric-card mc-purple" role="figure" aria-label="Meetings booked: 18">
+        <div class="mc-label">Meetings Booked <span class="mc-icon" aria-hidden="true">📅</span></div>
+        <div class="mc-value" id="mv-meetings">18</div>
+        <div class="mc-delta"><span class="delta-up">▲ 50%</span> vs prior period</div>
+      </div>
+      <div class="metric-card mc-gold" role="figure" aria-label="Pipeline value: $42,000">
+        <div class="mc-label">Pipeline Value <span class="mc-icon" aria-hidden="true">💰</span></div>
+        <div class="mc-value" id="mv-pipeline">$42k</div>
+        <div class="mc-delta"><span class="delta-up">▲ 76×</span> ROI vs cost</div>
+      </div>
+    </div>
+
+    <!-- ══ TIME SERIES + FUNNEL ══ -->
+    <div class="chart-row">
+
+      <!-- Time Series Chart -->
+      <div class="card" role="region" aria-label="Performance over time chart">
+        <div class="card-header">
+          <div class="card-title"><span class="ct-icon" aria-hidden="true">📈</span> Performance Over Time</div>
+          <div class="chart-legend" id="chartLegend" role="group" aria-label="Chart series toggles">
+            <button class="legend-item" onclick="toggleSeries('leads')" id="leg-leads" aria-pressed="true">
+              <span class="legend-dot" style="background:#4a8fff" aria-hidden="true"></span>Leads
+            </button>
+            <button class="legend-item" onclick="toggleSeries('enriched')" id="leg-enriched" aria-pressed="true">
+              <span class="legend-dot" style="background:#2ecc8a" aria-hidden="true"></span>Enriched
+            </button>
+            <button class="legend-item" onclick="toggleSeries('replies')" id="leg-replies" aria-pressed="true">
+              <span class="legend-dot" style="background:#9b6dff" aria-hidden="true"></span>Replies
+            </button>
+            <button class="legend-item" onclick="toggleSeries('meetings')" id="leg-meetings" aria-pressed="true">
+              <span class="legend-dot" style="background:#e8b84b" aria-hidden="true"></span>Meetings
+            </button>
+          </div>
+        </div>
+        <div class="card-body" style="padding:16px 20px">
+          <div class="chart-svg-wrap" id="chartWrap" style="height:220px">
+            <svg id="mainChart" viewBox="0 0 600 200" aria-label="Line chart showing performance trends over 4 weeks"></svg>
+          </div>
+          <div class="chart-tooltip" id="chartTooltip" role="tooltip" aria-live="polite"></div>
+        </div>
+      </div>
+
+      <!-- Conversion Funnel -->
+      <div class="card" role="region" aria-label="Conversion funnel">
+        <div class="card-header">
+          <div class="card-title"><span class="ct-icon" aria-hidden="true">🔽</span> Conversion Funnel</div>
+        </div>
+        <div class="card-body" id="funnelBody">
+          <!-- populated by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ ROI + TEMPLATE TABLE ══ -->
+    <div class="chart-row-equal">
+
+      <!-- ROI Calculator -->
+      <div class="card" role="region" aria-label="ROI Calculator">
+        <div class="card-header">
+          <div class="card-title"><span class="ct-icon" aria-hidden="true">💰</span> ROI Calculator</div>
+          <span style="font-family:var(--font-m);font-size:10px;color:var(--text3)">Adjust to model scenarios</span>
+        </div>
+        <div class="card-body">
+          <div class="roi-grid">
+            <div class="roi-inputs">
+              <div class="roi-field">
+                <div class="roi-label">Soldiro Monthly Cost</div>
+                <div class="roi-input-wrap">
+                  <span class="roi-prefix" aria-hidden="true">$</span>
+                  <input type="number" class="roi-input" id="roiCost" value="549"
+                         oninput="recalcROI()" aria-label="Monthly cost in dollars" min="0">
+                </div>
+              </div>
+              <div class="roi-field">
+                <div class="roi-label">Meetings Booked / Month</div>
+                <div class="roi-input-wrap">
+                  <input type="number" class="roi-input" id="roiMeetings" value="18"
+                         style="padding-left:12px" oninput="recalcROI()" aria-label="Meetings booked per month" min="0">
+                </div>
+                <input type="range" class="roi-slider" min="1" max="60" value="18" id="roiMeetingsSlider"
+                       oninput="syncSlider('meetings',this.value)" aria-label="Meetings slider">
+              </div>
+              <div class="roi-field">
+                <div class="roi-label">Avg. Deal Value</div>
+                <div class="roi-input-wrap">
+                  <span class="roi-prefix" aria-hidden="true">$</span>
+                  <input type="number" class="roi-input" id="roiDeal" value="25000"
+                         oninput="recalcROI()" aria-label="Average deal value" min="0">
+                </div>
+              </div>
+              <div class="roi-field">
+                <div class="roi-label">Win Rate (%)</div>
+                <div class="roi-input-wrap">
+                  <input type="number" class="roi-input" id="roiWinRate" value="15"
+                         style="padding-left:12px" min="1" max="100" oninput="recalcROI()" aria-label="Win rate percentage">
+                </div>
+                <input type="range" class="roi-slider" min="1" max="60" value="15" id="roiWinSlider"
+                       oninput="syncSlider('win',this.value)" aria-label="Win rate slider">
+              </div>
+            </div>
+            <div class="roi-output" role="region" aria-label="ROI output" aria-live="polite" aria-atomic="true">
+              <div class="roi-metric">
+                <div class="roi-metric-label">Monthly Pipeline</div>
+                <div class="roi-metric-value" id="roiPipeline" style="color:var(--green)">$67,500</div>
+                <div class="roi-metric-sub">18 meetings × $25k avg deal value</div>
+              </div>
+              <div class="roi-metric">
+                <div class="roi-metric-label">Expected Revenue</div>
+                <div class="roi-metric-value" id="roiRevenue" style="color:var(--blue)">$10,125</div>
+                <div class="roi-metric-sub">at 15% win rate</div>
+              </div>
+              <div class="roi-metric">
+                <div class="roi-metric-label">ROI Multiple</div>
+                <div class="roi-metric-value" id="roiMultiple" style="color:var(--gold)">18.4×</div>
+                <div class="roi-metric-sub" id="roiSubline">Revenue ÷ $549 cost</div>
+                <div class="roi-vs-sdr" id="roiVsSdr">
+                  <span aria-hidden="true">↓</span> <span id="roiSdrSaving">93%</span> cheaper than 1 SDR
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Template Performance -->
+      <div class="card" role="region" aria-label="Template performance">
+        <div class="card-header">
+          <div class="card-title"><span class="ct-icon" aria-hidden="true">🧪</span> Template Performance</div>
+          <button class="tpl-action-btn" onclick="showToast('A/B Test','Opening new A/B test setup…','info')"
+                  aria-label="Create new A/B test">+ New A/B Test</button>
+        </div>
+        <div class="card-body" style="padding:0">
+          <table class="template-table" aria-label="Template performance data">
+            <thead>
+              <tr>
+                <th>Template</th>
+                <th>Reply Rate</th>
+                <th>Meetings</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="templateBody">
+              <!-- populated by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ AI RECOMMENDATIONS ══ -->
+    <div class="ai-panel" id="aiPanel" role="region" aria-label="AI recommendations">
+      <div class="ai-panel-header">
+        <div class="ai-panel-title">
+          <span aria-hidden="true">✦</span> AI Recommendations
+          <span class="ai-badge">Claude Analysis</span>
+        </div>
+        <button class="ai-gen-btn" id="recoGenBtn" onclick="loadRecommendations()" aria-label="Generate AI recommendations">
+          <span aria-hidden="true">✦</span> <span id="recoGenLabel">Generate Insights</span>
+        </button>
+      </div>
+      <div class="ai-empty" id="aiEmptyState" aria-live="polite">
+        <div class="ai-empty-icon" aria-hidden="true">🤖</div>
+        <div class="ai-empty-text">Click "Generate Insights" to get Claude's analysis of your campaign data</div>
+      </div>
+      <div class="ai-reco-list" id="aiRecoList" style="display:none" aria-live="polite"></div>
+    </div>
+
+  </main>
+</div>
+
+<div class="toast-container" id="toastContainer" role="status" aria-live="polite" aria-atomic="false"></div>
+
+<script>
+/* ═══════════════════════════════════════
+   DATA
+═══════════════════════════════════════ */
+
+// Weekly time-series — 4 weeks
+const chartData = {
+  labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+  series: {
+    leads:    { color: '#4a8fff', values: [140, 190, 230, 287] },
+    enriched: { color: '#2ecc8a', values: [136, 184, 224, 279] },
+    replies:  { color: '#9b6dff', values: [6,   10,  14,  12] },
+    meetings: { color: '#e8b84b', values: [2,    4,   5,   7] },
+  }
+};
+
+const seriesVisible = { leads: true, enriched: true, replies: true, meetings: true };
+
+const funnelSteps = [
+  { label: 'Leads',     count: 847,  color: '#4a8fff' },
+  { label: 'Enriched',  count: 823,  color: '#2ecc8a' },
+  { label: 'Emailed',   count: 800,  color: '#9b6dff' },
+  { label: 'Opened',    count: 480,  color: '#ffb347' },
+  { label: 'Replied',   count: 42,   color: '#e84b6a' },
+  { label: 'Qualified', count: 38,   color: '#e8b84b' },
+  { label: 'Meetings',  count: 18,   color: '#f5d07a' },
+];
+
+const templates = [
+  { name: 'Direct & Sharp',   tone: 'Challenger opener',     replyRate: 8.2,  meetings: 8,  status: 'winner', sends: 340 },
+  { name: 'Consultative',     tone: 'Insight-led approach',  replyRate: 6.7,  meetings: 6,  status: 'test',   sends: 220 },
+  { name: 'Data-Driven',      tone: 'ROI + benchmarks',      replyRate: 5.3,  meetings: 3,  status: 'test',   sends: 165 },
+  { name: 'Warm & Friendly',  tone: 'Conversational',        replyRate: 3.1,  meetings: 1,  status: 'pause',  sends: 122 },
+  { name: 'Story-Led',        tone: 'Case study open',       replyRate: 4.8,  meetings: 0,  status: 'new',    sends: 0   },
+];
+
+/* ═══════════════════════════════════════
+   CHART
+═══════════════════════════════════════ */
+const PAD = { top: 20, right: 20, bottom: 36, left: 44 };
+const W = 600, H = 200;
+const CW = W - PAD.left - PAD.right;
+const CH = H - PAD.top - PAD.bottom;
+
+function getVisibleMax() {
+  let max = 0;
+  Object.entries(chartData.series).forEach(([k, s]) => {
+    if (seriesVisible[k]) s.values.forEach(v => { if (v > max) max = v; });
+  });
+  return max || 100;
+}
+
+function buildChart() {
+  const svg = document.getElementById('mainChart');
+  const labels = chartData.labels;
+  const n = labels.length;
+  const max = getVisibleMax();
+
+  const xStep = CW / (n - 1);
+
+  const xPos = (i) => PAD.left + i * xStep;
+  const yPos = (v) => PAD.top + CH - (v / max) * CH;
+
+  // Y-axis ticks
+  const ticks = [0, max * 0.25, max * 0.5, max * 0.75, max];
+
+  let html = `
+    <!-- Grid lines -->
+    <g aria-hidden="true">
+    ${ticks.map(t => {
+      const y = yPos(t);
+      return `
+        <line x1="${PAD.left}" y1="${y}" x2="${W - PAD.right}" y2="${y}"
+              stroke="#1e1e2e" stroke-width="1"/>
+        <text x="${PAD.left - 8}" y="${y + 4}" text-anchor="end"
+              font-family="'JetBrains Mono',monospace" font-size="9" fill="#6a6380">
+          ${Math.round(t)}
+        </text>`;
+    }).join('')}
+    </g>
+
+    <!-- X-axis labels -->
+    <g aria-hidden="true">
+    ${labels.map((l, i) => `
+      <text x="${xPos(i)}" y="${H - 8}" text-anchor="middle"
+            font-family="'JetBrains Mono',monospace" font-size="10" fill="#6a6380">
+        ${l}
+      </text>`).join('')}
+    </g>`;
+
+  // Series lines + areas
+  Object.entries(chartData.series).forEach(([key, s]) => {
+    if (!seriesVisible[key]) return;
+
+    const pts = s.values.map((v, i) => `${xPos(i)},${yPos(v)}`).join(' ');
+    const areaBottom = `${xPos(n - 1)},${yPos(0)} ${xPos(0)},${yPos(0)}`;
+
+    const gradId = `grad-${key}`;
+    html += `
+      <defs>
+        <linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="${s.color}" stop-opacity="0.2"/>
+          <stop offset="100%" stop-color="${s.color}" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <polygon points="${pts} ${areaBottom}"
+               fill="url(#${gradId})" aria-hidden="true"/>
+      <polyline points="${pts}"
+                fill="none" stroke="${s.color}" stroke-width="2"
+                stroke-linejoin="round" stroke-linecap="round"
+                aria-label="${key} trend line"/>`;
+
+    // Data points + hover targets
+    s.values.forEach((v, i) => {
+      html += `
+        <circle cx="${xPos(i)}" cy="${yPos(v)}" r="4"
+                fill="${s.color}" stroke="var(--bg)" stroke-width="2"
+                style="cursor:pointer"
+                onmouseenter="showChartTooltip(event, '${labels[i]}', ${i})"
+                onmouseleave="hideTooltip()"
+                tabindex="0"
+                aria-label="${key} week ${i + 1}: ${v}"/>`;
+    });
+  });
+
+  // Invisible hover columns for easier tooltip trigger
+  html += labels.map((l, i) => `
+    <rect x="${xPos(i) - xStep / 2}" y="${PAD.top}" width="${xStep}" height="${CH}"
+          fill="transparent"
+          onmouseenter="showChartTooltip(event, '${l}', ${i})"
+          onmouseleave="hideTooltip()"
+          aria-hidden="true"/>`).join('');
+
+  svg.innerHTML = html;
+}
+
+function showChartTooltip(event, label, idx) {
+  const tt = document.getElementById('chartTooltip');
+  const wrap = document.getElementById('chartWrap');
+  const rect = wrap.getBoundingClientRect();
+
+  let rows = `<div class="tt-label">${label}</div>`;
+  Object.entries(chartData.series).forEach(([key, s]) => {
+    if (!seriesVisible[key]) return;
+    rows += `
+      <div class="tt-row">
+        <span class="tt-dot" style="background:${s.color}"></span>
+        <span style="text-transform:capitalize;min-width:60px;color:var(--text3)">${key}</span>
+        <span class="tt-val" style="color:${s.color}">${s.values[idx]}</span>
+      </div>`;
+  });
+  tt.innerHTML = rows;
+
+  const x = event.clientX - rect.left;
+  const y = event.clientY - rect.top;
+  tt.style.left = (x + 14) + 'px';
+  tt.style.top  = Math.max(0, y - 20) + 'px';
+  tt.classList.add('visible');
+}
+
+function hideTooltip() {
+  document.getElementById('chartTooltip').classList.remove('visible');
+}
+
+function toggleSeries(key) {
+  seriesVisible[key] = !seriesVisible[key];
+  const btn = document.getElementById('leg-' + key);
+  btn.classList.toggle('hidden', !seriesVisible[key]);
+  btn.setAttribute('aria-pressed', seriesVisible[key]);
+  buildChart();
+}
+
+/* ═══════════════════════════════════════
+   FUNNEL
+═══════════════════════════════════════ */
+function buildFunnel() {
+  const container = document.getElementById('funnelBody');
+  const max = funnelSteps[0].count;
+
+  let html = '<div class="funnel-wrap" role="list">';
+
+  funnelSteps.forEach((step, i) => {
+    const pct = Math.round((step.count / max) * 100);
+    const dropPct = i > 0
+      ? Math.round((1 - step.count / funnelSteps[i - 1].count) * 100)
+      : null;
+
+    if (dropPct !== null && dropPct > 0) {
+      html += `
+        <div class="funnel-drop" aria-label="Drop-off: ${dropPct}%">
+          <span class="funnel-drop-arrow" aria-hidden="true">↓</span>
+          <span>${dropPct}% drop-off</span>
+        </div>`;
+    }
+
+    html += `
+      <div class="funnel-step" role="listitem" aria-label="${step.label}: ${step.count} (${pct}%)">
+        <div class="funnel-bar-row">
+          <div class="funnel-label">${step.label}</div>
+          <div class="funnel-track">
+            <div class="funnel-fill" data-pct="${pct}" style="background:${step.color}20;border-left:3px solid ${step.color}">
+              <span class="funnel-count" style="color:${step.color}">${step.count.toLocaleString()}</span>
+            </div>
+          </div>
+          <div class="funnel-pct">${pct}%</div>
+        </div>
+      </div>`;
+  });
+
+  html += '</div>';
+  container.innerHTML = html;
+
+  // Animate bars after paint
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.funnel-fill').forEach(el => {
+      el.style.width = el.dataset.pct + '%';
+    });
+  });
+}
+
+/* ═══════════════════════════════════════
+   TEMPLATE TABLE
+═══════════════════════════════════════ */
+function buildTemplateTable() {
+  const tbody = document.getElementById('templateBody');
+  const maxRate = Math.max(...templates.map(t => t.replyRate));
+
+  tbody.innerHTML = templates.map(t => {
+    const statusMap = {
+      winner: ['status-winner', '🏆 Winner'],
+      test:   ['status-test',   '🧪 Testing'],
+      pause:  ['status-pause',  '⏸ Paused'],
+      new:    ['status-new',    '✦ New'],
+    };
+    const [cls, label] = statusMap[t.status] || ['status-new', t.status];
+    const barPct = Math.round((t.replyRate / maxRate) * 100);
+    const barColor = t.status === 'winner' ? '#2ecc8a' : t.status === 'pause' ? '#e84b6a' : '#4a8fff';
+
+    const actionLabel = t.status === 'pause' ? 'Reactivate' : t.status === 'winner' ? 'Duplicate' : 'View';
+
+    return `
+      <tr>
+        <td>
+          <div class="tpl-name">${esc(t.name)}</div>
+          <div class="tpl-tone">${esc(t.tone)} · ${t.sends || '—'} sends</div>
+        </td>
+        <td>
+          <div class="rate-bar-wrap">
+            <div class="rate-bar">
+              <div class="rate-fill" data-pct="${barPct}" style="background:${barColor};width:0"></div>
+            </div>
+            <span class="rate-val" style="color:${barColor}">${t.replyRate}%</span>
+          </div>
+        </td>
+        <td style="font-family:var(--font-m);font-size:12px;color:var(--text2)">${t.meetings}</td>
+        <td><span class="tpl-status ${cls}">${label}</span></td>
+        <td>
+          <button class="tpl-action-btn" onclick="templateAction('${esc(t.name)}','${t.status}')"
+                  aria-label="${actionLabel} ${esc(t.name)}">
+            ${actionLabel}
+          </button>
+        </td>
+      </tr>`;
+  }).join('');
+
+  // Animate rate bars
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.rate-fill').forEach(el => {
+      el.style.width = el.dataset.pct + '%';
+    });
+  });
+}
+
+function templateAction(name, status) {
+  const msgs = {
+    winner: `Duplicating "${name}" as a new campaign template…`,
+    pause:  `Reactivating "${name}"…`,
+    test:   `Opening A/B test details for "${name}"…`,
+    new:    `Opening "${name}" template…`,
+  };
+  showToast(name, msgs[status] || 'Opening…', 'info');
+}
+
+/* ═══════════════════════════════════════
+   ROI CALCULATOR
+═══════════════════════════════════════ */
+function recalcROI() {
+  const cost     = parseFloat(document.getElementById('roiCost').value)     || 0;
+  const meetings = parseFloat(document.getElementById('roiMeetings').value) || 0;
+  const deal     = parseFloat(document.getElementById('roiDeal').value)     || 0;
+  const winRate  = parseFloat(document.getElementById('roiWinRate').value)  || 0;
+
+  const pipeline  = meetings * deal;
+  const revenue   = pipeline * (winRate / 100);
+  const multiple  = cost > 0 ? (revenue / cost).toFixed(1) : '∞';
+  const sdrSaving = 94; // ~$8k SDR vs ~$549 Soldiro
+
+  document.getElementById('roiPipeline').textContent = formatMoney(pipeline);
+  document.getElementById('roiRevenue').textContent  = formatMoney(revenue);
+  document.getElementById('roiMultiple').textContent = multiple + '×';
+  document.getElementById('roiSubline').textContent  = `Revenue ÷ $${cost.toLocaleString()} cost`;
+  document.getElementById('roiSdrSaving').textContent = sdrSaving + '%';
+
+  // Update sliders to stay in sync
+  document.getElementById('roiMeetingsSlider').value = Math.min(60, meetings);
+  document.getElementById('roiWinSlider').value       = Math.min(60, winRate);
+}
+
+function syncSlider(type, val) {
+  if (type === 'meetings') {
+    document.getElementById('roiMeetings').value = val;
+  } else {
+    document.getElementById('roiWinRate').value = val;
+  }
+  recalcROI();
+}
+
+function formatMoney(n) {
+  if (n >= 1000000) return '$' + (n / 1000000).toFixed(1) + 'M';
+  if (n >= 1000)    return '$' + (n / 1000).toFixed(0) + 'k';
+  return '$' + n.toFixed(0);
+}
+
+/* ═══════════════════════════════════════
+   DATE RANGE
+═══════════════════════════════════════ */
+function changeRange(days) {
+  const labels = { '7': 'Feb 19 – Feb 26, 2026', '30': 'Jan 27 – Feb 26, 2026', '90': 'Nov 28 – Feb 26, 2026', '180': 'Aug 30, 2025 – Feb 26, 2026' };
+  document.getElementById('dateRangeLabel').textContent = labels[days] || '';
+
+  // Regenerate data for different ranges (mock)
+  const scale = { '7': 0.23, '30': 1, '90': 3.1, '180': 6.4 }[days] || 1;
+  ['leads','replies','meetings'].forEach(k => {
+    chartData.series[k].values = [140, 190, 230, 287].map(v => Math.round(v * scale * (0.85 + Math.random() * 0.3)));
+  });
+  chartData.series.enriched.values = chartData.series.leads.values.map(v => Math.round(v * 0.97));
+
+  buildChart();
+  showToast('Range Updated', `Showing data for last ${days} days`, 'info');
+}
+
+/* ═══════════════════════════════════════
+   EXPORT
+═══════════════════════════════════════ */
+async function exportReport(type) {
+  showToast('Generating Report', `Preparing ${type.toUpperCase()} export…`, 'info');
+  await delay(1500);
+  showToast('Export Ready', `Your ${type.toUpperCase()} report is ready to download`, 'success');
+}
+
+/* ═══════════════════════════════════════
+   AI RECOMMENDATIONS
+═══════════════════════════════════════ */
+const RECOMMENDATIONS = [
+  {
+    type: 'urgent', typeLabel: 'rt-urgent', icon: '🔴', iconBg: 'var(--redfade)',
+    title: 'Pause "Warm & Friendly" template immediately',
+    text: 'Template B is underperforming at 3.1% reply rate — 2.6× below your top performer. Based on 122 sends, this is statistically significant. Reallocating those leads to "Direct & Sharp" would yield an estimated 13 additional replies this month.',
+    actions: ['Pause Template', 'View Details'],
+    impact: '+13 est. replies',
+  },
+  {
+    type: 'optimize', typeLabel: 'rt-optimize', icon: '🟡', iconBg: 'var(--amberfade)',
+    title: 'Sequence step 3 has a 41% open-to-click drop-off',
+    text: 'Your LinkedIn Day 5 touch is losing 41% of opened leads before they engage. The current message uses a direct ask — switching to a value-share format (short insight or data point) typically recovers 15–20% of those leads.',
+    actions: ['Edit Step 3', 'Show Benchmark'],
+    impact: '+8 est. replies',
+  },
+  {
+    type: 'opportunity', typeLabel: 'rt-opportunity', icon: '🟢', iconBg: 'var(--greenfade)',
+    title: 'Fintech DMs campaign has 47% untapped ICP headroom',
+    text: 'Your current Fintech DMs targeting covers ~500 companies. Apollo\'s database shows 940 matching companies in your ICP that haven\'t been touched. Expanding the list at current conversion rates would add approximately 9 additional meetings per month.',
+    actions: ['Expand Targeting', 'Estimate Pipeline'],
+    impact: '+9 est. meetings',
+  },
+  {
+    type: 'insight', typeLabel: 'rt-insight', icon: '🔵', iconBg: 'var(--bluefade)',
+    title: 'Tuesday 10–11am emails have 2.3× higher reply rate',
+    text: 'Analysing send time across all 847 leads, emails sent Tuesday between 10–11am ET see a 11.8% reply rate vs your 5.1% average. Your current sequence sends at randomised times. Scheduling to this window could nearly double performance.',
+    actions: ['Update Send Schedule', 'See Full Analysis'],
+    impact: '2.3× reply rate',
+  },
+  {
+    type: 'optimize', typeLabel: 'rt-optimize', icon: '🟡', iconBg: 'var(--amberfade)',
+    title: 'BANT qualification rate could improve with 1 extra question',
+    text: 'Currently 38/42 replies are BANT-scored, but only 18 reach meeting stage (47% show rate). Adding a single budget-qualifying question to the Day 7 case study email could filter unqualified leads earlier, saving approximately 6 no-show hours per month.',
+    actions: ['Edit Day 7 Email', 'Dismiss'],
+    impact: '-6h wasted meetings',
+  },
+];
+
+let recoLoaded = false;
+
+async function loadRecommendations() {
+  if (recoLoaded) return;
+
+  const btn = document.getElementById('recoGenBtn');
+  const label = document.getElementById('recoGenLabel');
+  const empty = document.getElementById('aiEmptyState');
+  const list  = document.getElementById('aiRecoList');
+
+  btn.disabled = true;
+  label.textContent = 'Analysing…';
+  empty.innerHTML = `
+    <div class="thinking-row">
+      <span style="color:var(--gold)">✦</span>
+      Claude is analysing 847 leads, 42 replies, and 4 weeks of trend data
+      <div class="dots"><span></span><span></span><span></span></div>
+    </div>`;
+
+  await delay(2200);
+
+  empty.style.display = 'none';
+  list.style.display  = 'flex';
+
+  // Stagger recommendations
+  for (let i = 0; i < RECOMMENDATIONS.length; i++) {
+    const r = RECOMMENDATIONS[i];
+    await delay(200);
+    const card = document.createElement('div');
+    card.className = 'reco-card';
+    card.style.animationDelay = `${i * 0.06}s`;
+    card.innerHTML = `
+      <div class="reco-icon" style="background:${r.iconBg}" aria-hidden="true">${r.icon}</div>
+      <div class="reco-body">
+        <div class="reco-header">
+          <span class="reco-type ${r.typeLabel}">${r.type.toUpperCase()}</span>
+          <span class="reco-impact" aria-label="Estimated impact: ${r.impact}">
+            <span aria-hidden="true">↑</span> ${r.impact}
+          </span>
+        </div>
+        <div class="reco-title">${esc(r.title)}</div>
+        <div class="reco-text">${esc(r.text)}</div>
+        <div class="reco-actions">
+          <button class="reco-act primary" onclick="actOnReco('${esc(r.actions[0])}')"
+                  aria-label="${esc(r.actions[0])}">${esc(r.actions[0])}</button>
+          <button class="reco-act secondary" onclick="actOnReco('${esc(r.actions[1])}')"
+                  aria-label="${esc(r.actions[1])}">${esc(r.actions[1])}</button>
+        </div>
+      </div>`;
+    list.appendChild(card);
+  }
+
+  btn.disabled = false;
+  label.textContent = '↺ Refresh Analysis';
+  recoLoaded = true;
+
+  showToast('Analysis Complete', `${RECOMMENDATIONS.length} recommendations generated`, 'success');
+
+  // Scroll to panel
+  document.getElementById('aiPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function actOnReco(action) {
+  showToast(action, 'Opening…', 'info');
+}
+
+/* ═══════════════════════════════════════
+   TOAST
+═══════════════════════════════════════ */
+const TOAST_ICONS = { success: '✅', info: 'ℹ️', warn: '⚠️', error: '❌' };
+
+function showToast(title, message, type = 'success') {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  const ico = document.createElement('div'); ico.className = 't-ico'; ico.setAttribute('aria-hidden','true'); ico.textContent = TOAST_ICONS[type] || '●';
+  const body = document.createElement('div');
+  const t = document.createElement('div'); t.className = 't-ttl'; t.textContent = title;
+  const m = document.createElement('div'); m.className = 't-msg'; m.textContent = message;
+  body.append(t, m);
+  toast.append(ico, body);
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.classList.add('leaving');
+    toast.addEventListener('animationend', () => toast.remove(), { once: true });
+  }, 3500);
+}
+
+/* ═══════════════════════════════════════
+   UTILS
+═══════════════════════════════════════ */
+function esc(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+/* ═══════════════════════════════════════
+   INIT
+═══════════════════════════════════════ */
+buildChart();
+buildFunnel();
+buildTemplateTable();
+recalcROI();
+</script>
+</body>
+</html>
