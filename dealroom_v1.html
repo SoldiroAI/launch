@@ -1,0 +1,1762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Soldiro — Strategic Deal Room</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════════════════
+   SOLDIRO DEAL ROOM — CSS FOUNDATION
+   Dark glass surfaces · Gold accents · Space Mono intelligence layer
+══════════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  /* Core palette — deep night mode */
+  --bg:        #0a0b0d;
+  --surface:   #111318;
+  --surface2:  #181c23;
+  --surface3:  #1e232c;
+  --ink:       #e8e4dc;
+  --ink2:      rgba(232,228,220,0.55);
+  --ink3:      rgba(232,228,220,0.28);
+  --border:    rgba(232,228,220,0.08);
+  --border2:   rgba(232,228,220,0.14);
+
+  /* Accents */
+  --gold:      #c8920a;
+  --gold2:     #f5b931;
+  --red:       #dc2626;
+  --red-soft:  rgba(220,38,38,0.12);
+  --green:     #059669;
+  --green-soft:rgba(5,150,105,0.1);
+  --purple:    #7c3aed;
+  --purple-soft:rgba(124,58,237,0.12);
+  --amber:     #d97706;
+  --amber-soft:rgba(217,119,6,0.12);
+  --blue:      #2563eb;
+
+  /* Vault status colors */
+  --status-signed:   #059669;
+  --status-reviewed: #2563eb;
+  --status-pending:  #d97706;
+  --status-locked:   rgba(232,228,220,0.25);
+
+  /* Typography */
+  --font-mono: 'Space Mono', monospace;
+  --font-body: 'DM Sans', sans-serif;
+
+  /* Sizing */
+  --vault-w: 268px;
+  --rail-w:  252px;
+  --header-h: 52px;
+}
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.5;
+  overflow: hidden;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* ══════════════════════════════════════════════════════════
+   LAYOUT
+══════════════════════════════════════════════════════════ */
+.dr-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.dr-topbar {
+  height: var(--header-h);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 16px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
+}
+
+.dr-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ── Left: Technical Vault ── */
+.dc-vault {
+  width: var(--vault-w);
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+/* ── Center: Deal Intelligence ── */
+.dr-main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Right: Buying Committee ── */
+.dr-rail {
+  width: var(--rail-w);
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow-y: auto;
+}
+
+/* ══════════════════════════════════════════════════════════
+   TOPBAR
+══════════════════════════════════════════════════════════ */
+.tb-logo {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+.tb-logo span { color: var(--ink3); }
+
+.tb-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+.tb-deal {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.tb-deal-name {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.tb-deal-meta {
+  font-size: 10px;
+  color: var(--ink3);
+  letter-spacing: 0.04em;
+}
+
+.tb-spacer { flex: 1; }
+
+.tb-tier {
+  padding: 3px 10px;
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: rgba(220,38,38,0.15);
+  border: 1px solid rgba(220,38,38,0.4);
+  color: #f87171;
+}
+
+.tb-signal-live {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--ink3);
+  letter-spacing: 0.08em;
+}
+.tb-pulse {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  animation: pulse-ring 2s infinite;
+}
+@keyframes pulse-ring {
+  0%   { box-shadow: 0 0 0 0 rgba(5,150,105,0.6); }
+  70%  { box-shadow: 0 0 0 6px rgba(5,150,105,0); }
+  100% { box-shadow: 0 0 0 0 rgba(5,150,105,0); }
+}
+
+.tb-win-prob {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 12px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 2px;
+}
+.tb-wp-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--ink3);
+  letter-spacing: 0.08em;
+}
+.tb-wp-bar {
+  width: 60px;
+  height: 4px;
+  background: var(--surface3);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.tb-wp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--green), var(--gold2));
+  border-radius: 2px;
+  transition: width 0.6s ease;
+}
+.tb-wp-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gold2);
+}
+
+/* ══════════════════════════════════════════════════════════
+   TECHNICAL VAULT — THE CORE FEATURE
+══════════════════════════════════════════════════════════ */
+.vault-header {
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.vault-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.vault-icon {
+  width: 24px;
+  height: 24px;
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.vault-title {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.vault-subtitle {
+  font-size: 9px;
+  color: var(--ink3);
+  letter-spacing: 0.04em;
+}
+
+.vault-stats {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+.vs-pill {
+  padding: 2px 7px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: var(--ink3);
+  letter-spacing: 0.06em;
+}
+.vs-pill.active { color: var(--gold); border-color: rgba(200,146,10,0.3); background: rgba(200,146,10,0.08); }
+
+/* ── Vault Body ── */
+.vault-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+
+/* ── Document Category ── */
+.vault-cat {
+  margin-bottom: 2px;
+}
+
+.vault-cat-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+  user-select: none;
+}
+.vault-cat-header:hover { background: var(--surface2); }
+
+.vch-icon {
+  font-size: 12px;
+  width: 18px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.vch-name {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--ink2);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  flex: 1;
+}
+.vch-count {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: var(--ink3);
+}
+.vch-chevron {
+  font-size: 8px;
+  color: var(--ink3);
+  transition: transform 0.2s;
+}
+.vault-cat.open .vch-chevron { transform: rotate(90deg); }
+
+/* ── Document Items ── */
+.vault-cat-docs {
+  display: none;
+  padding: 2px 0 6px;
+}
+.vault-cat.open .vault-cat-docs { display: block; }
+
+.vault-doc {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 7px 16px 7px 28px;
+  cursor: pointer;
+  transition: background 0.12s;
+  position: relative;
+}
+.vault-doc:hover { background: var(--surface2); }
+.vault-doc.flagged { background: rgba(220,38,38,0.04); }
+.vault-doc.flagged:hover { background: rgba(220,38,38,0.08); }
+
+/* Risk alert stripe */
+.vault-doc.flagged::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--red);
+}
+
+.vd-icon {
+  font-size: 13px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.vd-body { flex: 1; min-width: 0; }
+
+.vd-name {
+  font-size: 11px;
+  color: var(--ink);
+  line-height: 1.3;
+  margin-bottom: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.vd-name.flagged-name { color: #f87171; }
+
+.vd-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.vd-status {
+  font-family: var(--font-mono);
+  font-size: 7.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 1px 5px;
+  border-radius: 1px;
+}
+.vds-signed   { background: rgba(5,150,105,0.15);  color: #34d399; border: 1px solid rgba(5,150,105,0.3); }
+.vds-reviewed { background: rgba(37,99,235,0.15);  color: #60a5fa; border: 1px solid rgba(37,99,235,0.3); }
+.vds-pending  { background: rgba(217,119,6,0.15);  color: #fbbf24; border: 1px solid rgba(217,119,6,0.3); }
+.vds-locked   { background: rgba(255,255,255,0.04); color: var(--ink3); border: 1px solid var(--border); }
+.vds-alert    { background: rgba(220,38,38,0.15);  color: #f87171; border: 1px solid rgba(220,38,38,0.3); animation: alert-pulse 1.5s infinite; }
+
+@keyframes alert-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.vd-engagement {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: var(--ink3);
+}
+.vd-engagement.hot { color: #fbbf24; }
+
+/* ── Risk Alert Banner ── */
+.vault-risk-alert {
+  margin: 8px 12px;
+  padding: 8px 12px;
+  background: rgba(220,38,38,0.08);
+  border: 1px solid rgba(220,38,38,0.25);
+  border-radius: 2px;
+}
+.vra-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+.vra-icon { font-size: 10px; }
+.vra-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  color: #f87171;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.vra-body {
+  font-size: 10px;
+  color: rgba(232,228,220,0.6);
+  line-height: 1.4;
+}
+.vra-action {
+  margin-top: 5px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: #f87171;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+}
+
+/* ── Vault Footer ── */
+.vault-footer {
+  padding: 10px 16px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.vault-tracking {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.vt-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--green);
+  animation: pulse-ring 2s infinite;
+}
+.vt-label {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: var(--ink3);
+  letter-spacing: 0.06em;
+}
+
+.vault-trust-meter {
+  margin-bottom: 6px;
+}
+.vtm-label-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+.vtm-label {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: var(--ink3);
+  letter-spacing: 0.06em;
+}
+.vtm-val {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: var(--gold2);
+  font-weight: 700;
+}
+.vtm-bar {
+  height: 3px;
+  background: var(--surface3);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.vtm-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), var(--gold2));
+  border-radius: 2px;
+  width: 68%;
+  transition: width 0.6s ease;
+}
+
+.vault-summary {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: var(--ink3);
+  letter-spacing: 0.04em;
+}
+
+/* ══════════════════════════════════════════════════════════
+   MAIN CONTENT — DEAL INTELLIGENCE
+══════════════════════════════════════════════════════════ */
+
+/* ── Deal Header Card ── */
+.deal-header-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 16px 20px;
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.dhc-company { flex: 1; }
+.dhc-name {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  margin-bottom: 3px;
+}
+.dhc-meta {
+  font-size: 12px;
+  color: var(--ink2);
+  margin-bottom: 10px;
+}
+.dhc-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.dhc-tag {
+  padding: 2px 8px;
+  border: 1px solid var(--border2);
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: var(--ink3);
+  letter-spacing: 0.06em;
+}
+.dhc-tag.gold { color: var(--gold2); border-color: rgba(245,185,49,0.3); background: rgba(245,185,49,0.06); }
+.dhc-tag.red  { color: #f87171; border-color: rgba(220,38,38,0.3); background: rgba(220,38,38,0.06); }
+
+.dhc-metrics {
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+}
+.dhc-metric {
+  text-align: right;
+}
+.dhcm-label {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: var(--ink3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+.dhcm-val {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1;
+}
+.dhcm-val.gold { color: var(--gold2); }
+.dhcm-val.green { color: #34d399; }
+
+.dhc-sep {
+  width: 1px;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+/* ── Stage Tracker ── */
+.stage-tracker {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 14px 20px;
+}
+
+.st-head {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--ink3);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.st-stages {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.st-stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+}
+
+/* connecting line */
+.st-stage:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 11px;
+  left: 50%;
+  width: 100%;
+  height: 2px;
+  background: var(--border2);
+  z-index: 0;
+}
+.st-stage.done:not(:last-child)::after { background: var(--green); }
+.st-stage.current:not(:last-child)::after { background: linear-gradient(90deg, var(--green), var(--border2)); }
+
+.st-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--border2);
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  position: relative;
+  z-index: 1;
+  transition: all 0.3s;
+}
+.st-stage.done .st-dot   { border-color: var(--green); background: rgba(5,150,105,0.15); color: #34d399; }
+.st-stage.current .st-dot { border-color: var(--gold); background: rgba(200,146,10,0.15); color: var(--gold2); box-shadow: 0 0 0 4px rgba(200,146,10,0.12); }
+
+.st-label {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: var(--ink3);
+  letter-spacing: 0.05em;
+  text-align: center;
+}
+.st-stage.done .st-label   { color: #34d399; }
+.st-stage.current .st-label { color: var(--gold2); }
+
+/* ── Signal Feed ── */
+.signal-feed-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.sfc-head {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sfc-title {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--ink2);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  flex: 1;
+}
+.sfc-badge {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  padding: 1px 6px;
+  background: rgba(220,38,38,0.12);
+  border: 1px solid rgba(220,38,38,0.3);
+  border-radius: 1px;
+  color: #f87171;
+}
+
+.signal-item {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.signal-item:hover { background: var(--surface2); }
+.signal-item:last-child { border-bottom: none; }
+
+.si-left { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.si-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+.si-dot.red    { background: var(--red); box-shadow: 0 0 0 3px rgba(220,38,38,0.2); }
+.si-dot.gold   { background: var(--gold2); box-shadow: 0 0 0 3px rgba(245,185,49,0.2); }
+.si-dot.green  { background: var(--green); box-shadow: 0 0 0 3px rgba(5,150,105,0.2); }
+.si-dot.purple { background: var(--purple); box-shadow: 0 0 0 3px rgba(124,58,237,0.2); }
+.si-line { width: 1px; background: var(--border); flex: 1; min-height: 16px; }
+
+.si-body { flex: 1; }
+.si-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 3px;
+}
+.si-event {
+  font-size: 12px;
+  color: var(--ink);
+  font-weight: 500;
+}
+.si-time {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: var(--ink3);
+  margin-left: auto;
+}
+.si-detail {
+  font-size: 11px;
+  color: var(--ink2);
+  line-height: 1.4;
+}
+.si-score-delta {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  padding: 1px 5px;
+  border-radius: 1px;
+  margin-top: 4px;
+}
+.si-score-delta.up { background: var(--green-soft); color: #34d399; }
+.si-score-delta.warn { background: var(--red-soft); color: #f87171; }
+
+/* ── BANT Scorecard ── */
+.bant-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 14px 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 10px;
+}
+
+.bant-item {}
+.bant-label {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: var(--ink3);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.bant-value {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--ink2);
+  margin-bottom: 5px;
+  line-height: 1.3;
+}
+.bant-bar {
+  height: 2px;
+  background: var(--surface3);
+  border-radius: 1px;
+  overflow: hidden;
+}
+.bant-fill { height: 100%; border-radius: 1px; }
+.bant-fill.full  { background: var(--green); width: 100%; }
+.bant-fill.high  { background: var(--gold2); width: 80%; }
+.bant-fill.med   { background: var(--amber); width: 55%; }
+
+/* ── Next Best Actions ── */
+.nba-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.nba-head {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--ink2);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.nba-item {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.nba-item:last-child { border-bottom: none; }
+
+.nba-num {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.nba-num.urgent { background: rgba(220,38,38,0.15); color: #f87171; border: 1px solid rgba(220,38,38,0.3); }
+.nba-num.normal { background: var(--surface2); color: var(--ink3); border: 1px solid var(--border2); }
+
+.nba-body { flex: 1; }
+.nba-action { font-size: 12px; color: var(--ink); font-weight: 500; margin-bottom: 2px; }
+.nba-reason { font-size: 10px; color: var(--ink3); }
+.nba-btn {
+  margin-top: 6px;
+  padding: 3px 10px;
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--ink2);
+  transition: all 0.15s;
+}
+.nba-btn:hover { border-color: var(--gold); color: var(--gold); }
+.nba-btn.urgent { border-color: rgba(220,38,38,0.4); color: #f87171; }
+.nba-btn.urgent:hover { background: rgba(220,38,38,0.1); }
+
+/* ══════════════════════════════════════════════════════════
+   RIGHT RAIL — BUYING COMMITTEE
+══════════════════════════════════════════════════════════ */
+.rail-section {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.rail-head {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--ink3);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+/* ── Stakeholder Cards ── */
+.stakeholder {
+  display: flex;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: opacity 0.12s;
+}
+.stakeholder:hover { opacity: 0.85; }
+.stakeholder:last-child { border-bottom: none; }
+
+.sh-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  flex-shrink: 0;
+  position: relative;
+}
+.sh-avatar.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--green);
+  border: 1px solid var(--surface);
+}
+.sh-avatar.risk::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--red);
+  border: 1px solid var(--surface);
+}
+
+.sh-body { flex: 1; min-width: 0; }
+.sh-name { font-size: 11px; font-weight: 600; color: var(--ink); margin-bottom: 1px; }
+.sh-role { font-size: 9px; color: var(--ink3); margin-bottom: 4px; }
+.sh-activity { font-size: 9px; color: var(--ink2); }
+.sh-activity.risk { color: #f87171; }
+
+.sh-score {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+  align-self: center;
+}
+
+/* ── Risk Indicators ── */
+.risk-item {
+  display: flex;
+  gap: 8px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--border);
+  align-items: flex-start;
+}
+.risk-item:last-child { border-bottom: none; }
+.ri-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+.ri-text { font-size: 11px; color: var(--ink2); line-height: 1.4; }
+.ri-level {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  margin-left: auto;
+  flex-shrink: 0;
+  align-self: flex-start;
+  padding: 1px 5px;
+  border-radius: 1px;
+}
+.ri-level.high { background: var(--red-soft); color: #f87171; border: 1px solid rgba(220,38,38,0.3); }
+.ri-level.med  { background: var(--amber-soft); color: #fbbf24; border: 1px solid rgba(217,119,6,0.3); }
+.ri-level.low  { background: var(--green-soft); color: #34d399; border: 1px solid rgba(5,150,105,0.3); }
+
+/* ── Timeline ── */
+.timeline-item {
+  display: flex;
+  gap: 10px;
+  padding: 5px 0;
+}
+.ti-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 5px;
+  background: var(--border2);
+}
+.ti-dot.done { background: var(--green); }
+.ti-dot.current { background: var(--gold2); }
+.ti-body { flex: 1; }
+.ti-label { font-size: 11px; color: var(--ink2); }
+.ti-date {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: var(--ink3);
+}
+
+/* ══════════════════════════════════════════════════════════
+   TOAST NOTIFICATION
+══════════════════════════════════════════════════════════ */
+.toast-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.toast {
+  padding: 10px 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--ink2);
+  letter-spacing: 0.04em;
+  max-width: 280px;
+  animation: toastIn 0.3s ease forwards;
+  pointer-events: all;
+}
+.toast.signal { border-color: rgba(200,146,10,0.4); color: var(--gold2); }
+.toast.alert  { border-color: rgba(220,38,38,0.4); color: #f87171; }
+.toast.ok     { border-color: rgba(5,150,105,0.4); color: #34d399; }
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes toastOut {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(20px); }
+}
+
+/* ══════════════════════════════════════════════════════════
+   UTILITY
+══════════════════════════════════════════════════════════ */
+.mono { font-family: var(--font-mono); }
+.gold-text { color: var(--gold2); }
+.red-text  { color: #f87171; }
+.green-text { color: #34d399; }
+.muted { color: var(--ink3); }
+</style>
+</head>
+<body>
+
+<div class="dr-shell">
+
+  <!-- ── TOPBAR ── -->
+  <header class="dr-topbar">
+    <div class="tb-logo">Soldiro<span>AI</span> / DR</div>
+    <div class="tb-divider"></div>
+    <div class="tb-deal">
+      <div class="tb-deal-name">NexaFintech · Deal Room #DR-0047</div>
+      <div class="tb-deal-meta">Opened 14 days ago · Day 14 of ~60 · AE: Marcus O.</div>
+    </div>
+    <div class="tb-spacer"></div>
+    <div class="tb-signal-live"><div class="tb-pulse"></div>Signal tracking live</div>
+    <div class="tb-divider"></div>
+    <div class="tb-win-prob">
+      <div class="tb-wp-label">WIN PROB</div>
+      <div class="tb-wp-bar"><div class="tb-wp-fill" style="width:78%"></div></div>
+      <div class="tb-wp-num">78%</div>
+    </div>
+    <div class="tb-tier">TIER 1 · CLASS A</div>
+  </header>
+
+  <!-- ── BODY ── -->
+  <div class="dr-body">
+
+    <!-- ══════════════════════════════════════
+         LEFT SIDEBAR: TECHNICAL VAULT
+    ══════════════════════════════════════ -->
+    <aside class="dc-vault">
+
+      <div class="vault-header">
+        <div class="vault-title-row">
+          <div class="vault-icon">🔒</div>
+          <div>
+            <div class="vault-title">Technical Vault</div>
+            <div class="vault-subtitle">NexaFintech · Confidential</div>
+          </div>
+        </div>
+        <div class="vault-stats">
+          <div class="vs-pill active">7 docs</div>
+          <div class="vs-pill active">3 reviewed</div>
+          <div class="vs-pill">1 signed</div>
+          <div class="vs-pill">⚠ 1 alert</div>
+        </div>
+      </div>
+
+      <!-- Risk Alert Banner — fires when InfoSec opens Liability 4× -->
+      <div class="vault-risk-alert" id="vaultRiskAlert">
+        <div class="vra-head">
+          <span class="vra-icon">⚡</span>
+          <span class="vra-label">Risk Signal Detected</span>
+        </div>
+        <div class="vra-body">
+          Head of InfoSec <strong>David Singleton</strong> opened "AI Liability Clause" <strong id="riskCount">4×</strong> in the last 60 min. Legal friction likely.
+        </div>
+        <div class="vra-action" onclick="handleRiskAction()">→ Notify AE now · Add legal FAQ doc</div>
+      </div>
+
+      <!-- Vault Document Body -->
+      <div class="vault-body">
+
+        <!-- Category 1: Architecture -->
+        <div class="vault-cat open" id="cat-arch">
+          <div class="vault-cat-header" onclick="toggleCat('cat-arch')">
+            <span class="vch-icon">🏗️</span>
+            <span class="vch-name">Architecture</span>
+            <span class="vch-count">2 docs</span>
+            <span class="vch-chevron">▶</span>
+          </div>
+          <div class="vault-cat-docs">
+            <div class="vault-doc" onclick="openDoc('system-arch', 'Architecture Diagram reviewed — +15 intent pts', 'signal')">
+              <span class="vd-icon">📐</span>
+              <div class="vd-body">
+                <div class="vd-name">System Architecture Diagram</div>
+                <div class="vd-meta">
+                  <span class="vd-status vds-reviewed">Reviewed</span>
+                  <span class="vd-engagement hot">5 opens · 34 min</span>
+                </div>
+              </div>
+            </div>
+            <div class="vault-doc" onclick="openDoc('vpc-map', 'VPC Mapping opened — CTO validated infra', 'ok')">
+              <span class="vd-icon">🔗</span>
+              <div class="vd-body">
+                <div class="vd-name">AWS / Snowflake VPC Mapping</div>
+                <div class="vd-meta">
+                  <span class="vd-status vds-signed">Signed Off</span>
+                  <span class="vd-engagement hot">3 opens · 18 min</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Category 2: Security & Compliance -->
+        <div class="vault-cat open" id="cat-sec">
+          <div class="vault-cat-header" onclick="toggleCat('cat-sec')">
+            <span class="vch-icon">🛡️</span>
+            <span class="vch-name">Security & Compliance</span>
+            <span class="vch-count">3 docs</span>
+            <span class="vch-chevron">▶</span>
+          </div>
+          <div class="vault-cat-docs">
+            <div class="vault-doc" onclick="openDoc('soc2', 'SOC2 report opened — compliance check', 'signal')">
+              <span class="vd-icon">✅</span>
+              <div class="vd-body">
+                <div class="vd-name">SOC2 Type II Report</div>
+                <div class="vd-meta">
+                  <span class="vd-status vds-reviewed">Reviewed</span>
+                  <span class="vd-engagement">2 opens · 12 min</span>
+                </div>
+              </div>
+            </div>
+            <div class="vault-doc" onclick="openDoc('gdpr', 'GDPR / PII Whitepaper opened', 'ok')">
+              <span class="vd-icon">🇪🇺</span>
+              <div class="vd-body">
+                <div class="vd-name">GDPR & PII Scrubbing Protocol</div>
+                <div class="vd-meta">
+                  <span class="vd-status vds-pending">Pending</span>
+                  <span class="vd-engagement">1 open · 4 min</span>
+                </div>
+              </div>
+            </div>
+            <div class="vault-doc flagged" onclick="openDoc('liability', null, 'alert'); incrementRisk()">
+              <span class="vd-icon">⚠️</span>
+              <div class="vd-body">
+                <div class="vd-name flagged-name">AI Liability Clause v2.1</div>
+                <div class="vd-meta">
+                  <span class="vd-status vds-alert">⚡ RISK ALERT</span>
+                  <span class="vd-engagement hot" id="liabilityOpens">4 opens · 61 min</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Category 3: ROI & Business Case -->
+        <div class="vault-cat open" id="cat-roi">
+          <div class="vault-cat-header" onclick="toggleCat('cat-roi')">
+            <span class="vch-icon">📈</span>
+            <span class="vch-name">ROI & Business Case</span>
+            <span class="vch-count">2 docs</span>
+            <span class="vch-chevron">▶</span>
+          </div>
+          <div class="vault-cat-docs">
+            <div class="vault-doc" onclick="openDoc('roi-calc', 'ROI Calculator opened — CFO evaluating numbers', 'signal')">
+              <span class="vd-icon">🧮</span>
+              <div class="vd-body">
+                <div class="vd-name">Revenue Benchmarking Calculator</div>
+                <div class="vd-meta">
+                  <span class="vd-status vds-reviewed">Reviewed</span>
+                  <span class="vd-engagement hot">CFO · 3 opens · 28 min</span>
+                </div>
+              </div>
+            </div>
+            <div class="vault-doc" onclick="openDoc('case-studies', 'Case studies opened — competitor comparison', 'ok')">
+              <span class="vd-icon">📊</span>
+              <div class="vd-body">
+                <div class="vd-name">Fintech SaaS Case Studies × 3</div>
+                <div class="vd-meta">
+                  <span class="vd-status vds-pending">Pending Review</span>
+                  <span class="vd-engagement">1 open · 8 min</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Category 4: Implementation -->
+        <div class="vault-cat" id="cat-impl">
+          <div class="vault-cat-header" onclick="toggleCat('cat-impl')">
+            <span class="vch-icon">🚀</span>
+            <span class="vch-name">Implementation</span>
+            <span class="vch-count">1 doc</span>
+            <span class="vch-chevron">▶</span>
+          </div>
+          <div class="vault-cat-docs">
+            <div class="vault-doc" onclick="openDoc('roadmap', 'Deployment roadmap opened — Day 1–30 plan', 'ok')">
+              <span class="vd-icon">🗺️</span>
+              <div class="vd-body">
+                <div class="vd-name">Day 1→30 Deployment Roadmap</div>
+                <div class="vd-meta">
+                  <span class="vd-status vds-locked">Locked · Post-sign</span>
+                  <span class="vd-engagement">Not opened yet</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /vault-body -->
+
+      <!-- Vault Footer -->
+      <div class="vault-footer">
+        <div class="vault-tracking">
+          <div class="vt-dot"></div>
+          <div class="vt-label">ENGAGEMENT TRACKING ACTIVE → SIGNAL ENGINE</div>
+        </div>
+        <div class="vault-trust-meter">
+          <div class="vtm-label-row">
+            <span class="vtm-label">TRUST EQUITY SCORE</span>
+            <span class="vtm-val" id="trustScore">68 / 100</span>
+          </div>
+          <div class="vtm-bar">
+            <div class="vtm-fill" id="trustFill" style="width:68%"></div>
+          </div>
+        </div>
+        <div class="vault-summary mono muted" id="vaultSummary">
+          7 docs · 3 reviewed · 1 signed · Tracking 4 stakeholders
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- ══════════════════════════════════════
+         MAIN: DEAL INTELLIGENCE
+    ══════════════════════════════════════ -->
+    <main class="dr-main">
+
+      <!-- Deal Header -->
+      <div class="deal-header-card">
+        <div class="dhc-company">
+          <div class="dhc-name">NexaFintech</div>
+          <div class="dhc-meta">Fintech SaaS · $22M ARR · London/Lagos · VP Sales: Rachel Adeyemi</div>
+          <div class="dhc-tags">
+            <span class="dhc-tag gold">CLASS A — STRATEGIC CAPITAL</span>
+            <span class="dhc-tag gold">$38,000 ACV</span>
+            <span class="dhc-tag">BANT: 4/4</span>
+            <span class="dhc-tag">Day 14 / ~60</span>
+            <span class="dhc-tag red">⚠ Legal friction detected</span>
+          </div>
+        </div>
+        <div class="dhc-sep"></div>
+        <div class="dhc-metric">
+          <div class="dhcm-label">Deal Value</div>
+          <div class="dhcm-val gold">$38k</div>
+        </div>
+        <div class="dhc-sep"></div>
+        <div class="dhc-metric">
+          <div class="dhcm-label">Win Prob</div>
+          <div class="dhcm-val green">78%</div>
+        </div>
+        <div class="dhc-sep"></div>
+        <div class="dhc-metric">
+          <div class="dhcm-label">Signal Score</div>
+          <div class="dhcm-val gold">94/150</div>
+        </div>
+      </div>
+
+      <!-- Stage Tracker -->
+      <div class="stage-tracker">
+        <div class="st-head">DEAL STAGE TRACKER</div>
+        <div class="st-stages">
+          <div class="st-stage done">
+            <div class="st-dot">✓</div>
+            <div class="st-label">Discovery</div>
+          </div>
+          <div class="st-stage done">
+            <div class="st-dot">✓</div>
+            <div class="st-label">Qualified</div>
+          </div>
+          <div class="st-stage done">
+            <div class="st-dot">✓</div>
+            <div class="st-label">Technical<br>Review</div>
+          </div>
+          <div class="st-stage current">
+            <div class="st-dot">→</div>
+            <div class="st-label">Security<br>Clearance</div>
+          </div>
+          <div class="st-stage">
+            <div class="st-dot"></div>
+            <div class="st-label">Legal &<br>Contract</div>
+          </div>
+          <div class="st-stage">
+            <div class="st-dot"></div>
+            <div class="st-label">Closed<br>Won</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Signal Feed -->
+      <div class="signal-feed-card">
+        <div class="sfc-head">
+          <span class="sfc-title">⚡ Live Signal Feed · Last 24h</span>
+          <span class="sfc-badge">1 RISK ALERT</span>
+        </div>
+
+        <div class="signal-item" onclick="showToast('InfoSec engagement logged → +12 intent pts → Score: 94/150', 'alert')">
+          <div class="si-left"><div class="si-dot red"></div><div class="si-line"></div></div>
+          <div class="si-body">
+            <div class="si-head">
+              <span class="si-event">⚠️ Risk Signal — Security Review</span>
+              <span class="si-time">09:47</span>
+            </div>
+            <div class="si-detail">
+              <strong>David Singleton</strong> (Head of InfoSec) opened <em>AI Liability Clause v2.1</em> 4 times in 61 minutes. Possible legal blocker identified.
+            </div>
+            <span class="si-score-delta warn">⚡ Triggered Risk Alert → AE Notified</span>
+          </div>
+        </div>
+
+        <div class="signal-item" onclick="showToast('CFO ROI engagement → high buying intent · Signal Engine updated', 'signal')">
+          <div class="si-left"><div class="si-dot gold"></div><div class="si-line"></div></div>
+          <div class="si-body">
+            <div class="si-head">
+              <span class="si-event">💰 High Intent — CFO ROI Deep Dive</span>
+              <span class="si-time">08:22</span>
+            </div>
+            <div class="si-detail">
+              <strong>Amara Nwosu</strong> (CFO) spent 28 minutes in the Revenue Benchmarking Calculator. Modelled 3 scenarios at $38k ACV.
+            </div>
+            <span class="si-score-delta up">↑ Intent: +15 pts · Composite: 89 → 94</span>
+          </div>
+        </div>
+
+        <div class="signal-item" onclick="showToast('Architecture sign-off logged → Technical objections cleared', 'ok')">
+          <div class="si-left"><div class="si-dot green"></div><div class="si-line"></div></div>
+          <div class="si-body">
+            <div class="si-head">
+              <span class="si-event">✅ Architecture Signed Off — CTO Approved</span>
+              <span class="si-time">07:15</span>
+            </div>
+            <div class="si-detail">
+              <strong>James Okoro</strong> (CTO) countersigned the AWS/Snowflake VPC Mapping. Technical objections cleared.
+            </div>
+            <span class="si-score-delta up">↑ Trust Equity: +8 pts → 68/100</span>
+          </div>
+        </div>
+
+        <div class="signal-item" onclick="showToast('Social proof momentum — buying committee alignment active', 'signal')">
+          <div class="si-left"><div class="si-dot purple"></div><div class="si-line"></div></div>
+          <div class="si-body">
+            <div class="si-head">
+              <span class="si-event">📋 Social Proof — Lead Architect Reviewed</span>
+              <span class="si-time">Yesterday 16:40</span>
+            </div>
+            <div class="si-detail">
+              <strong>Sofia Chen</strong> (Lead Architect) reviewed System Architecture Diagram. CTO sees this as committee sign-off.
+            </div>
+            <span class="si-score-delta up">↑ Buying Committee Score: 3/4 → 4/4</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- BANT Scorecard -->
+      <div class="bant-card">
+        <div class="bant-item">
+          <div class="bant-label">Budget</div>
+          <div class="bant-value">$38k ACV confirmed by CFO</div>
+          <div class="bant-bar"><div class="bant-fill full"></div></div>
+        </div>
+        <div class="bant-item">
+          <div class="bant-label">Authority</div>
+          <div class="bant-value">CFO + VP Sales in loop</div>
+          <div class="bant-bar"><div class="bant-fill full"></div></div>
+        </div>
+        <div class="bant-item">
+          <div class="bant-label">Need</div>
+          <div class="bant-value">Outbound pipeline gap confirmed</div>
+          <div class="bant-bar"><div class="bant-fill full"></div></div>
+        </div>
+        <div class="bant-item">
+          <div class="bant-label">Timeline</div>
+          <div class="bant-value">Q2 close · Pending legal</div>
+          <div class="bant-bar"><div class="bant-fill high"></div></div>
+        </div>
+      </div>
+
+      <!-- Next Best Actions -->
+      <div class="nba-card">
+        <div class="nba-head">NEXT BEST ACTIONS — Signal-Derived</div>
+        <div class="nba-item">
+          <div class="nba-num urgent">1</div>
+          <div class="nba-body">
+            <div class="nba-action">Address InfoSec legal friction immediately</div>
+            <div class="nba-reason">David Singleton opened Liability Clause 4× — unresolved objection will stall legal stage</div>
+            <button class="nba-btn urgent" onclick="showToast('Legal FAQ document queued for Vault upload · AE notified via Slack', 'alert')">⚡ Add Legal FAQ to Vault → Notify AE</button>
+          </div>
+        </div>
+        <div class="nba-item">
+          <div class="nba-num normal">2</div>
+          <div class="nba-body">
+            <div class="nba-action">Send CFO the ROI summary PDF</div>
+            <div class="nba-reason">28-min calculator session = active buying mode · Strike while intent is high</div>
+            <button class="nba-btn" onclick="showToast('ROI PDF queued for CFO Amara Nwosu · Personalised to $38k ACV scenario', 'ok')">Send ROI Summary → CFO</button>
+          </div>
+        </div>
+        <div class="nba-item">
+          <div class="nba-num normal">3</div>
+          <div class="nba-body">
+            <div class="nba-action">Unlock Day 1–30 Deployment Roadmap</div>
+            <div class="nba-reason">CTO has signed off architecture — roadmap access creates implementation momentum pre-close</div>
+            <button class="nba-btn" onclick="unlockRoadmap()">Unlock Roadmap → Send to James</button>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- ══════════════════════════════════════
+         RIGHT RAIL: BUYING COMMITTEE
+    ══════════════════════════════════════ -->
+    <aside class="dr-rail">
+
+      <!-- Buying Committee -->
+      <div class="rail-section">
+        <div class="rail-head">Buying Committee · 4 Stakeholders</div>
+
+        <div class="stakeholder" onclick="showToast('Rachel Adeyemi · VP Sales · Champion · Last active 2h ago', 'ok')">
+          <div class="sh-avatar active" style="background:rgba(5,150,105,0.15);color:#34d399">RA</div>
+          <div class="sh-body">
+            <div class="sh-name">Rachel Adeyemi</div>
+            <div class="sh-role">VP Sales · Champion</div>
+            <div class="sh-activity">Active 2h ago · 8 vault opens</div>
+          </div>
+          <div class="sh-score green-text">92</div>
+        </div>
+
+        <div class="stakeholder" onclick="showToast('Amara Nwosu · CFO · Economic Buyer · High intent from ROI calc', 'signal')">
+          <div class="sh-avatar active" style="background:rgba(245,185,49,0.12);color:#f5b931">AN</div>
+          <div class="sh-body">
+            <div class="sh-name">Amara Nwosu</div>
+            <div class="sh-role">CFO · Economic Buyer</div>
+            <div class="sh-activity">ROI Calc: 28 min session</div>
+          </div>
+          <div class="sh-score gold-text">87</div>
+        </div>
+
+        <div class="stakeholder" onclick="showToast('James Okoro · CTO · Technical Approver · VPC mapping signed', 'ok')">
+          <div class="sh-avatar active" style="background:rgba(37,99,235,0.12);color:#60a5fa">JO</div>
+          <div class="sh-body">
+            <div class="sh-name">James Okoro</div>
+            <div class="sh-role">CTO · Technical Approver</div>
+            <div class="sh-activity">VPC mapping signed · 3 docs</div>
+          </div>
+          <div class="sh-score" style="color:#60a5fa">84</div>
+        </div>
+
+        <div class="stakeholder" onclick="showToast('David Singleton · Head of InfoSec · RISK SIGNAL · 4× Liability opens', 'alert')">
+          <div class="sh-avatar risk" style="background:rgba(220,38,38,0.12);color:#f87171">DS</div>
+          <div class="sh-body">
+            <div class="sh-name">David Singleton</div>
+            <div class="sh-role">Head of InfoSec · Blocker Risk</div>
+            <div class="sh-activity risk">⚠ Liability Clause 4× opens</div>
+          </div>
+          <div class="sh-score red-text">41</div>
+        </div>
+      </div>
+
+      <!-- Risk Indicators -->
+      <div class="rail-section">
+        <div class="rail-head">Risk Indicators</div>
+        <div class="risk-item">
+          <div class="ri-dot" style="background:var(--red)"></div>
+          <div class="ri-text">InfoSec legal friction on AI Liability Clause</div>
+          <div class="ri-level high">HIGH</div>
+        </div>
+        <div class="risk-item">
+          <div class="ri-dot" style="background:var(--amber)"></div>
+          <div class="ri-text">GDPR whitepaper still pending review by Rachel</div>
+          <div class="ri-level med">MED</div>
+        </div>
+        <div class="risk-item">
+          <div class="ri-dot" style="background:var(--green)"></div>
+          <div class="ri-text">CTO technical approval secured · Architecture signed</div>
+          <div class="ri-level low">CLEAR</div>
+        </div>
+        <div class="risk-item">
+          <div class="ri-dot" style="background:var(--green)"></div>
+          <div class="ri-text">Budget confirmed at $38k by CFO engagement</div>
+          <div class="ri-level low">CLEAR</div>
+        </div>
+      </div>
+
+      <!-- Deal Timeline -->
+      <div class="rail-section">
+        <div class="rail-head">Key Milestones</div>
+        <div class="timeline-item">
+          <div class="ti-dot done"></div>
+          <div class="ti-body">
+            <div class="ti-label">Discovery call · BANT qualified</div>
+            <div class="ti-date">Feb 28</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="ti-dot done"></div>
+          <div class="ti-body">
+            <div class="ti-label">Technical review · CTO approved</div>
+            <div class="ti-date">Mar 7</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="ti-dot done"></div>
+          <div class="ti-body">
+            <div class="ti-label">Deal Room opened · Vault activated</div>
+            <div class="ti-date">Mar 10</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="ti-dot current"></div>
+          <div class="ti-body">
+            <div class="ti-label" style="color:var(--gold2)">Security clearance in progress</div>
+            <div class="ti-date">Mar 14 ← now</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="ti-dot"></div>
+          <div class="ti-body">
+            <div class="ti-label">Legal review + contract send</div>
+            <div class="ti-date">Target: Mar 28</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="ti-dot"></div>
+          <div class="ti-body">
+            <div class="ti-label">Close + Deal Room provision</div>
+            <div class="ti-date">Target: Apr 14</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Signal Intelligence -->
+      <div class="rail-section">
+        <div class="rail-head">Signal Intelligence</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+              <span class="mono muted" style="font-size:8px;letter-spacing:0.06em">VAULT ENGAGEMENT</span>
+              <span class="mono gold-text" style="font-size:8px">High</span>
+            </div>
+            <div style="height:3px;background:var(--surface3);border-radius:2px;overflow:hidden">
+              <div style="height:100%;width:82%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:2px"></div>
+            </div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+              <span class="mono muted" style="font-size:8px;letter-spacing:0.06em">BUYING COMMITTEE</span>
+              <span class="mono" style="font-size:8px;color:#60a5fa">3/4 aligned</span>
+            </div>
+            <div style="height:3px;background:var(--surface3);border-radius:2px;overflow:hidden">
+              <div style="height:100%;width:75%;background:var(--blue);border-radius:2px"></div>
+            </div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+              <span class="mono muted" style="font-size:8px;letter-spacing:0.06em">LEGAL RISK</span>
+              <span class="mono red-text" style="font-size:8px">Elevated</span>
+            </div>
+            <div style="height:3px;background:var(--surface3);border-radius:2px;overflow:hidden">
+              <div style="height:100%;width:65%;background:var(--red);border-radius:2px"></div>
+            </div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+              <span class="mono muted" style="font-size:8px;letter-spacing:0.06em">TIME PRESSURE</span>
+              <span class="mono" style="font-size:8px;color:#34d399">Q2 Aligned</span>
+            </div>
+            <div style="height:3px;background:var(--surface3);border-radius:2px;overflow:hidden">
+              <div style="height:100%;width:70%;background:var(--green);border-radius:2px"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+  </div><!-- /dr-body -->
+</div><!-- /dr-shell -->
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+/* ══════════════════════════════════════════════════════════
+   SOLDIRO DEAL ROOM — JAVASCRIPT
+   Technical Vault engagement tracking · Signal logging
+   Toast notifications · Trust Equity scoring
+══════════════════════════════════════════════════════════ */
+
+/* ── State ── */
+let trustScore   = 68;
+let openedDocs   = new Set();
+let liabilityCount = 4;
+let signalLog    = [];
+
+/* ── Category toggle ── */
+function toggleCat(id) {
+  const cat = document.getElementById(id);
+  cat.classList.toggle('open');
+}
+
+/* ── Core: Document Open Handler ── */
+function openDoc(docId, message, type) {
+  const isFirstOpen = !openedDocs.has(docId);
+  openedDocs.add(docId);
+
+  // Log to signal engine
+  signalLog.push({
+    docId,
+    timestamp: new Date().toISOString(),
+    type: type || 'signal'
+  });
+
+  if (message) showToast(message, type || 'signal');
+
+  // Trust equity update for first opens
+  if (isFirstOpen && type !== 'alert') {
+    updateTrust(+6);
+  }
+
+  // Silent analytics log (what the real system would send to Airtable)
+  console.log(`📊 Signal Engine: doc_open · id=${docId} · opens=${signalLog.filter(s=>s.docId===docId).length} · intent+=5`);
+}
+
+/* ── Liability Clause: increment risk counter ── */
+function incrementRisk() {
+  liabilityCount++;
+  const countEl = document.getElementById('riskCount');
+  const opensEl = document.getElementById('liabilityOpens');
+  if (countEl) countEl.textContent = liabilityCount + '×';
+  if (opensEl) opensEl.textContent = `${liabilityCount} opens · ${(liabilityCount * 14) + 5} min`;
+
+  // Update risk alert to reflect new count
+  showToast(`⚡ RISK ESCALATED: InfoSec now ${liabilityCount}× on Liability Clause → AE notified`, 'alert');
+  updateTrust(-4);
+}
+
+/* ── Risk Action ── */
+function handleRiskAction() {
+  showToast('✓ AE notified via Slack · Legal FAQ doc added to Security category · Vault updated', 'ok');
+  updateTrust(+5);
+
+  // Visual feedback: update alert
+  const alert = document.getElementById('vaultRiskAlert');
+  if (alert) {
+    alert.style.borderColor = 'rgba(5,150,105,0.3)';
+    alert.style.background  = 'rgba(5,150,105,0.06)';
+    setTimeout(() => {
+      alert.style.borderColor = '';
+      alert.style.background  = '';
+    }, 3000);
+  }
+}
+
+/* ── Unlock Roadmap ── */
+function unlockRoadmap() {
+  showToast('Day 1→30 Deployment Roadmap unlocked · Sent to James Okoro (CTO) · Vault status updated', 'ok');
+  updateTrust(+7);
+
+  // Find the locked status badge and update it
+  const lockedBadges = document.querySelectorAll('.vds-locked');
+  lockedBadges.forEach(b => {
+    if (b.textContent.includes('Post-sign')) {
+      b.className = 'vd-status vds-reviewed';
+      b.textContent = 'Unlocked';
+    }
+  });
+}
+
+/* ── Trust Equity Update ── */
+function updateTrust(delta) {
+  trustScore = Math.max(0, Math.min(100, trustScore + delta));
+  const el   = document.getElementById('trustScore');
+  const fill = document.getElementById('trustFill');
+  if (el)   el.textContent = trustScore + ' / 100';
+  if (fill) fill.style.width = trustScore + '%';
+}
+
+/* ── Toast Notification ── */
+function showToast(message, type = 'signal') {
+  const container = document.getElementById('toastContainer');
+  const toast     = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.textContent = message;
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.animation = 'toastOut 0.3s ease forwards';
+    setTimeout(() => toast.remove(), 300);
+  }, 3800);
+}
+
+/* ── Initial boot toast ── */
+setTimeout(() => {
+  showToast('Deal Room active · Technical Vault engagement tracking live', 'ok');
+}, 600);
+
+setTimeout(() => {
+  showToast('⚡ Risk signal: David Singleton opened Liability Clause 4× → AE alert sent', 'alert');
+}, 2000);
+</script>
+</body>
+</html>
